@@ -1,0 +1,76 @@
+/* All tables */
+#league-table { border-collapse: collapse; }
+
+.league-table-teamName { font-family: Arial, Helvetica, sans-serif; }
+.league-table-form-cell { font-family: Courier New, Courier, monospace; }
+
+#league-table-header { line-height: 30px; }
+
+#league-table-header { font-size: 0.9rem; }
+.league-table-form-cell { font-size: 0.8rem; }
+
+#league-table { text-align: right; }
+.league-table-teamName, .league-table-form-header, .league-table-form, .league-table-form-cell { text-align: left; }
+
+#league-table-header, .league-table-teamName, .league-table-points, .league-table-form-cell { font-weight: bold; }
+
+.league-table-position { width: 3%; }
+.league-table-movement { width: 4%; }
+.league-table-teamName { width: 20%; }
+.league-table-played, .league-table-won, .league-table-drawn, .league-table-lost { width: 4%; }
+.league-table-goalsFor, .league-table-goalsAgainst, .league-table-goalDifference { width: 5%; }
+.league-table-points { width: 10%; }
+
+.league-table-form-cell { color: white; }
+
+#league-table-header { background-color: #F7F7F5; }
+
+.league-table-form-cell.W { background-color: green; }
+.league-table-form-cell.D { background-color: gray; }
+.league-table-form-cell.L { background-color: red; }
+
+.league-table-row { border-bottom: 1px solid #e5e5e3; }
+
+.league-table-won { padding-left: 40px; }
+.league-table-goalsFor { padding-left: 50px; }
+.league-table-goalDifference { padding-left: 50px; }
+.league-table-form-header { padding-left: 20px; }
+
+.league-table-form-cell:first-child { margin-left: 20px;}
+
+.league-table-points {
+    padding-right: 20px;
+    border-right: 1px solid #e5e5e3;
+}
+
+.league-table-form-cell {
+    margin-right: 3px;
+    padding: 3px;
+}
+    
+.league-table-row td {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* Full League Table */
+.league-table-full .league-table-position { width: 2%; }
+.league-table-full .league-table-movement { width: 1%; }
+.league-table-full .league-table-played, .league-table-won, .league-table-drawn, .league-table-lost { width: 3%; }
+.league-table-full .league-table-goalsFor, .league-table-goalsAgainst, .league-table-goalDifference { width: 4%; }
+.league-table-full .league-table-won { padding-left: 40px; }
+.league-table-full .league-table-goalsFor { padding-left: 30px; }
+.league-table-full .league-table-goalDifference { padding-left: 40px; }
+
+
+/* In-Play League Table */
+#league-table-latest { line-height: 1.1rem; }
+#league-table-latest { font-size: 0.9rem; }
+#league-table-latest { padding-top: 25px; }
+#league-table-latest h3 { font-size: 1.1rem; font-weight: bold; }
+#league-table-latest .league-table-row td { padding-top: 6px; padding-bottom: 6px; }
+#league-table-latest .league-table-movement { width: 30px; text-align: center; }
+#league-table-latest .league-table-teamName { width: 25%; }
+#league-table-latest .league-table-won { padding-left: 20px; }
+#league-table-latest .league-table-goalDifference { padding-left: 20px; }
+#league-table-latest .league-table-form-header { padding-left: 20px; }

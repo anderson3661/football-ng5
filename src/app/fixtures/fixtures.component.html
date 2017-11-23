@@ -1,0 +1,22 @@
+<div id="main-grid">
+
+  <h1>{{ displayHeader }}</h1>
+  <div *ngFor="let fixtureSet of fixturesToOutput; let fixtureSetIndex = index">
+    <table id="main-header-fixtures">
+      <tr>
+        <td>{{ fixtureSet.dateOfSetOfFixtures }}</td>
+      </tr>
+    </table>
+
+    <table class="fixtures{{ displayResults ? ' results' : '' }}">
+      <tr class="fixtures-row" *ngFor="let fixture of fixturesToOutput[fixtureSetIndex].fixtures; let i = index">
+        <td id="homeTeam{{i}}">{{ fixture.homeTeam }}</td>
+        <td id="homeTeamsScore{{i}}"><span [ngClass]="{ finalScore: displayResults }">{{ displayResults ? fixture.homeTeamsScore : '' }}</span></td>
+        <td class="versus">{{ displayResults ? '' : 'v' }}</td>
+        <td id="awayTeamsScore{{i}}"><span [ngClass]="{ finalScore: displayResults }">{{ displayResults ? fixture.awayTeamsScore : '' }}</span></td>
+        <td id="awayTeam{{i}}">{{ fixture.awayTeam }}</td>
+      </tr>
+    </table>
+  </div>
+
+</div>

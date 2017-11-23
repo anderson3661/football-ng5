@@ -1,0 +1,131 @@
+#main-header-fixtures {        
+    width: 100%; 
+    background-color: #F7F7F5; 
+    margin-bottom: 10px;
+    padding: 5px;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-family: 'Times New Roman', Times, serif;
+    border-collapse: separate;    
+}
+
+table.fixtures {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+table.fixtures.results, table.fixtures.latest {
+    line-height: 1.2em;
+}
+
+.fixtures-row {
+    border-bottom: 1px solid #E0E0E0;     
+}
+
+.fixtures-row-scores {
+    border-bottom: 1px solid #E0E0E0;     
+}
+
+.fixtures-row td, .fixtures-row-latest td {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.fixtures-row [id^=homeTeam], .fixtures-row [id^=awayTeam], .fixtures-row-latest [id^=homeTeam], .fixtures-row-latest [id^=awayTeam] {
+    width: auto;
+    width: 47%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.fixtures-row-latest [id^=homeTeam], .fixtures-row-latest [id^=awayTeam] {
+    padding-top: 15px;
+}
+
+.fixtures-row-latest [id^=homeTeam], .fixtures-row-latest [id^=awayTeam] {
+    padding-bottom: 5px;
+}
+
+.fixtures-row [id^=homeTeam], .fixtures-row-latest [id^=homeTeam], .fixtures-row-scores [id^=homeTeamsGoals] {
+    text-align: right;
+    padding-right: 8px;
+}
+
+.fixtures-row-latest [id^=homeTeam] {
+    padding-right: 8px;
+}
+
+.fixtures-row-scores [id^=homeTeamsGoals], .fixtures-row-scores [id^=awayTeamsGoals] {
+    padding-top: 0;
+    white-space: pre;    /* This allows 2 spaces between goals */
+}
+
+.fixtures-row [id^=awayTeam], .fixtures-row-latest [id^=awayTeam], .fixtures-row-scores [id^=awayTeamsGoals] {
+    text-align: left;
+    padding-left: 8px;
+}
+
+.fixtures-row-latest [id^=awayTeam] {
+    padding-left: 13px;
+}
+
+.fixtures-row-scores [id^=awayTeamsGoals] {
+    padding-left: 18px;
+}
+
+.fixtures-row [id^=homeTeamsScore], .fixtures-row [id^=awayTeamsScore], .fixtures-row-latest [id^=homeTeamsScore], .fixtures-row-latest [id^=awayTeamsScore] {
+    width: 1%;              /* Needs to be 1% to get padding and everything else right */
+}
+
+.fixtures-row [id^=homeTeamsScore], .fixtures-row-latest [id^=homeTeamsScore] {
+    padding-right: 0;
+}
+
+.fixtures-row [id^=awayTeamsScore], .fixtures-row-latest [id^=awayTeamsScore] {
+    padding-left: 0;
+}
+
+.fixtures-row .result, .fixtures-row-latest .result { 
+    font-size: 1.0em;
+}
+
+.fixtures-row .versus {
+    text-align: center;
+    width: 0.3%;
+}
+
+.fixtures-row-latest .versus {
+    text-align: center;
+    padding-top: 8px;
+}
+
+.fixtures-row .activeScore, .fixtures-row-latest .activeScore {
+    color: white;   
+    background-color: #1f2fe4;
+    padding: 5px;
+}
+
+.fixtures-row .halfTimeScore, .fixtures-row-latest .halfTimeScore {
+    background-color: #c5caf0;
+    padding: 5px;
+}
+
+.fixtures-row .finalScore, .fixtures-row-latest .finalScore {
+    background-color: #FFDF43;
+    padding: 3px 5px;
+}
+
+.fixtures-row-scores {
+    font-size: 0.8em;
+    color: #888;
+}
+
+.fa-arrow-down { color: #fa8787; }
+.fa-arrow-up { color: #88c480; }
+.faIconTop3 { font-family: FontAwesome; top: 0; left: 0; }
+.faIconTop3BeforeText, .faIconTop3AfterText { position: relative; }
+.faIconTop3BeforeText:before, .faIconTop3AfterText:after { color: #a67c00; padding-left: 5px; padding-right: 10px; }
+.faIconTop3Home1st:before, .faIconTop3Away1st:after { content: "\f005"; }
+.faIconTop3Home2nd:before, .faIconTop3Away2nd:after { content: "\f123"; }
+.faIconTop3Home3rd:before, .faIconTop3Away3rd:after { content: "\f006"; }

@@ -1,3 +1,36 @@
-<h1>
-  {{title}}
-</h1>
+<div class="outer-container">
+  
+  <header>
+    <div class="main-header">Sport{{ showAppVersionOnTitle }}</div>
+  </header>
+
+  <nav id="sport">
+    <div class="main-header">
+        <ul>
+        <li>Football<a href="#"></a></li>
+        <li>Cricket<a href="#"></a></li>
+        <li>Golf<a href="#"></a></li>
+        </ul>
+    </div>
+  </nav>
+
+  <nav class="individual-sport" id="football">
+      <div class="main-header">
+          <ul>
+          <li><a routerLink="/fixtures">Remaining Fixtures</a></li>
+          <li><a routerLink="/fixtures-latest">Latest Fixtures</a></li>
+          <li><a routerLink="/fixtures/results">Results</a></li>
+          <li><a routerLink="/tables">Table</a></li>
+          <li><a routerLink="/tables/full">Table (Full)</a></li>       
+          <li><a routerLink="/administration">Administration</a></li>
+          </ul>
+      </div>
+  </nav> 
+
+  <router-outlet></router-outlet>
+    
+  <footer>
+    &copy; Martin Anderson 2017
+  </footer>
+
+</div>

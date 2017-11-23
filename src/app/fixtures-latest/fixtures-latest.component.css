@@ -1,0 +1,33 @@
+#main-grid-latest-fixtures {
+    max-width: 85%;
+    margin: 0 auto;
+}
+
+#split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1;
+    grid-column-gap: 100px;
+}
+
+#fixtures-latest {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#league-table-latest {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* Replaced by Bootstrap */
+/* #startSetOfFixtures {
+    /* width: 50px; */
+    /* padding: 10px; */
+    /* font-size: 16px; */
+/* } */
+
+#numberOfMinutes {
+    text-align: center;
+    color: blue;
+}
