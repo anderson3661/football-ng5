@@ -1,4 +1,4 @@
-<div class="inner-container">
+<div class="inner-container" *ngIf="appDataMiscInfo != undefined">
 
     <div id="main-grid">
 
@@ -28,7 +28,8 @@
                                         <input type="text" class="form-control form-control-sm" id="team{{ i }}" [(ngModel)]="nTeam.teamName" name="team{{ i }}">
                                     </td>
                                     <td id="topteam{{ i }}">
-                                        <input type="checkbox" class="form-control form-control-sm" id="topteam{{ i }}" ng-checked="nTeam.isATopTeam" [(ngModel)]="nTeam.isATopTeam" name="topteam{{ i }}">
+                                        <input type="checkbox" class="form-control form-control-sm" id="topteam{{ i }}" ng-checked="nTeam.isATopTeam" [(ngModel)]="nTeam.isATopTeam"
+                                            name="topteam{{ i }}">
                                     </td>
                                 </tr>
                             </table>
@@ -40,24 +41,24 @@
                 <div id="div-admin-factors">
 
                     <!-- <mat-card class="example-card">            
-              <mat-card-header>
-                <div mat-card-avatar class="example-header-image"></div>
-                <mat-card-title>Shiba Inu</mat-card-title>
-                <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-              </mat-card-header>             -->
+                      <mat-card-header>
+                        <div mat-card-avatar class="example-header-image"></div>
+                        <mat-card-title>Shiba Inu</mat-card-title>
+                        <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+                      </mat-card-header>             -->
                     <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">-->
                     <!-- <mat-card-content>
-                <p>
-                  The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-                  A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-                  bred for hunting.
-                </p>
-              </mat-card-content>
-              <mat-card-actions>
-                <button mat-button>LIKE</button>
-                <button mat-button>SHARE</button>
-              </mat-card-actions>
-            </mat-card> -->
+                        <p>
+                          The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
+                          A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
+                          bred for hunting.
+                        </p>
+                      </mat-card-content>
+                      <mat-card-actions>
+                        <button mat-button>LIKE</button>
+                        <button mat-button>SHARE</button>
+                      </mat-card-actions>
+                    </mat-card> -->
 
                     <div class="card bg-light border-secondary mb-3">
                         <h4 class="card-header text-center">Information for the Season</h4>
@@ -80,16 +81,17 @@
                             <div class="form-group row">
                                 <label for="numberOfFixturesForSeason" class="col-sm-6 col-form-label">Number of Fixtures for Season</label>
                                 <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="numberOfFixturesForSeason" [(ngModel)]="appDataMiscInfo.numberOfFixturesForSeason" name="numberOfFixturesForSeason">
+                                    <input type="text" class="form-control" id="numberOfFixturesForSeason" [(ngModel)]="appDataMiscInfo.numberOfFixturesForSeason"
+                                        name="numberOfFixturesForSeason">
                                 </div>
                             </div>
 
                             <!-- <div class="form-group row">
-                                <label for="dateOfLastSetOfFixtures" class="col-sm-6 col-form-label">Date of Last Set of Fixtures</label>
-                                <div class="col-sm-4">
-                                <input type="text" class="form-control" id="dateOfLastSetOfFixtures">
-                                </div>
-                            </div> -->
+                                        <label for="dateOfLastSetOfFixtures" class="col-sm-6 col-form-label">Date of Last Set of Fixtures</label>
+                                        <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="dateOfLastSetOfFixtures">
+                                        </div>
+                                    </div> -->
 
                         </div>
                     </div>
@@ -101,7 +103,8 @@
                             <div class="form-group row">
                                 <label for="factorBaseForRandomMultiplier" class="col-sm-6 col-form-label">Base For Random Multiplier</label>
                                 <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="factorBaseForRandomMultiplier" [(ngModel)]="appDataMiscInfo.factorBaseForRandomMultiplier" name="factorBaseForRandomMultiplier">
+                                    <input type="text" class="form-control" id="factorBaseForRandomMultiplier" [(ngModel)]="appDataMiscInfo.factorBaseForRandomMultiplier"
+                                        name="factorBaseForRandomMultiplier">
                                 </div>
                             </div>
 
@@ -122,7 +125,8 @@
                             <div class="form-group row">
                                 <label for="factorLikelihoodOfAGoalDuringASetPeriod" class="col-sm-6 col-form-label">Goals Per Minute Factor</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="factorLikelihoodOfAGoalDuringASetPeriod" [(ngModel)]="appDataMiscInfo.factorLikelihoodOfAGoalDuringASetPeriod" name="factorLikelihoodOfAGoalDuringASetPeriod">
+                                    <input type="text" class="form-control" id="factorLikelihoodOfAGoalDuringASetPeriod" [(ngModel)]="appDataMiscInfo.factorLikelihoodOfAGoalDuringASetPeriod"
+                                        name="factorLikelihoodOfAGoalDuringASetPeriod">
                                 </div>
                             </div>
 
@@ -144,7 +148,7 @@
                     </div>
 
                     <br />
-                    <button id="adminSave" class="btn btn-primary" (click)="this.dataService.saveAppData()">Save Changes</button> &nbsp; &nbsp;
+                    <button id="adminSave" class="btn btn-primary" (click)="this.dataService.saveAppData(true)">Save Changes</button> &nbsp; &nbsp;
                     <button id="fixturesForSeason" class="btn btn-info" (click)="this.createFixturesForSeason()">Create Fixtures for Season</button>
                     <br />
                     <br />

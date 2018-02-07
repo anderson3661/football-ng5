@@ -21,6 +21,7 @@
 .league-table-goalsFor, .league-table-goalsAgainst, .league-table-goalDifference { width: 5%; }
 .league-table-points { width: 10%; }
 
+.league-table-teamName a { color: black; }
 .league-table-form-cell { color: white; }
 
 #league-table-header { background-color: #F7F7F5; }
@@ -56,11 +57,17 @@
 /* Full League Table */
 .league-table-full .league-table-position { width: 2%; }
 .league-table-full .league-table-movement { width: 1%; }
+.league-table-full .league-table-teamName { width: 18%; }
 .league-table-full .league-table-played, .league-table-won, .league-table-drawn, .league-table-lost { width: 3%; }
 .league-table-full .league-table-goalsFor, .league-table-goalsAgainst, .league-table-goalDifference { width: 4%; }
+.league-table-full .league-table-points { width: 8% }
+
 .league-table-full .league-table-won { padding-left: 40px; }
 .league-table-full .league-table-goalsFor { padding-left: 30px; }
 .league-table-full .league-table-goalDifference { padding-left: 40px; }
+.league-table-full .league-table-points { padding-right: 15px; }
+.league-table-full .league-table-form-cell { margin-right: 1px; padding: 3px; }
+.league-table-full .league-table-form-cell:first-child { margin-left: 15px;}
 
 
 /* In-Play League Table */
@@ -73,4 +80,11 @@
 #league-table-latest .league-table-teamName { width: 25%; }
 #league-table-latest .league-table-won { padding-left: 20px; }
 #league-table-latest .league-table-goalDifference { padding-left: 20px; }
+#league-table-latest .league-table-points { padding-right: 20px; }
 #league-table-latest .league-table-form-header { padding-left: 20px; }
+#league-table-latest .league-table-form-cell { margin-right: 1px; padding: 2px; }
+#league-table-latest .league-table-form-cell:first-child { margin-left: 20px;}
+
+.teamNameLink:hover {
+    text-decoration: underline;
+}

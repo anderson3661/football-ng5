@@ -1,0 +1,37 @@
+<div id="main-grid">
+
+    <h1>Results/Fixtures for {{ teamName }}</h1>
+
+    <table class="fixtures">
+        <tr class="fixtures-row team-stats" *ngFor="let fixture of fixturesToOutput; let i = index">
+            <td class="fixtureDate">{{ fixture.dateOfFixture }}</td>
+            <td id="homeTeamsName{{ i }}">{{ fixture.homeTeam }}</td>
+            <td id="homeTeamsScore{{ i }}">
+                <span [ngClass]="{ finalScore: fixture.hasFixtureBeenPlayed }">{{ fixture.homeTeamsScore }}</span>
+            </td>
+            <td class="versus">{{ fixture.hasFixtureBeenPlayed ? '' : 'v' }}</td>
+            <td id="awayTeamsScore{{ i }}">
+                <span [ngClass]="{ finalScore: fixture.hasFixtureBeenPlayed }">{{ fixture.awayTeamsScore }}</span>
+            </td>
+            <td id="awayTeamsName{{ i }}">{{ fixture.awayTeam }}</td>
+        </tr>
+    </table>
+   
+    <!-- <div class="chart">
+        <canvas
+            baseChart
+            [chartType]="chartType"
+            [datasets]="chartData"
+            [labels]="chartLabels"
+            [options]="chartOptions"
+            [colors]="chartColors"
+            [legend]="true"> -->
+            <!-- (chartClick)="onChartClick($event)"> -->
+        <!-- </canvas> -->
+    <!-- </div> -->
+
+    <canvas id="myChart"></canvas>
+
+    <!-- <app-chart></app-chart> -->
+
+</div>

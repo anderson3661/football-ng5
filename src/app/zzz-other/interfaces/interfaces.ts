@@ -1,5 +1,3 @@
-import { strictEqual } from "assert";
-
 // Team(s) model
 interface TeamModel {
     teamName: string,
@@ -26,10 +24,11 @@ interface FixtureModel {
     awayTeamsGoals?: string,
     injuryTime1stHalf?: number,
     injuryTime2ndHalf?: number,
-    maxNumberOfMinutes: number
+    maxNumberOfMinutes?: number,
+    hasFixtureBeenPlayed: boolean
 }
 
-interface FixturesModel extends Array<FixtureModel> { }
+export interface FixturesModel extends Array<FixtureModel> { }
 
 export interface SetOfFixturesModel {
     dateOfSetOfFixtures: string,
@@ -78,7 +77,9 @@ export interface MiscInfoModel {
     factorIsItAGoal: number,
     numberOfFixturesForSeason: number,
     matchUpdateInterval: number,
-    numberOfTeams: number
+    numberOfTeams: number,
+    hasSeasonStarted: boolean,
+    hasSeasonFinished: boolean
 }
 
 // App Data model
@@ -114,3 +115,21 @@ export interface SetOfFixturesControllerModel {
     teamIn2ndPlaceInTable: string,
     teamIn3rdPlaceInTable: string
 }
+
+
+// Team Stats Controller model
+export interface TeamStatModel {
+    dateOfFixture: string,    
+    homeTeam: string,
+    awayTeam: string,
+    homeTeamsScore: number,
+    awayTeamsScore: number,
+    homeTeamsGoals: string,
+    awayTeamsGoals: string,
+    winDrawLoss: string;
+    positionInTable: number,
+    hasFixtureBeenPlayed: boolean    
+}
+
+export interface TeamStatsModel extends Array<TeamStatModel> { }
+

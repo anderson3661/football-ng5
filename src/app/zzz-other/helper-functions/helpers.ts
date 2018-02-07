@@ -1,11 +1,24 @@
-export function getRandomNumber(nToRandomise) {
+import { DataService } from './../services/data.service';
+import { AllFixturesModel, SetOfFixturesModel } from './../interfaces/interfaces';
+
+
+export function getEmptyAllFixtures(): AllFixturesModel {
+    return [{ dateOfSetOfFixtures: "", fixtures: [] }];
+}
+
+export function getEmptySetOfFixtures(): SetOfFixturesModel {
+    return { dateOfSetOfFixtures: "", fixtures: [] };    
+}
+
+export function getRandomNumber(nToRandomise): number {
     return Math.floor(Math.random() * nToRandomise);
 }
 
 
-export function formatDate(date) {
+export function formatDate(dateOfFixtures: string): string {
     let monthNames: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+    let date = new Date(dateOfFixtures);
     let day: number = date.getDate();
     let monthIndex: number = date.getMonth();
     let year: number = date.getFullYear();
@@ -21,11 +34,11 @@ export function formatDate(date) {
         sDaySuffix = "th";
     }
 
-    return day + sDaySuffix + ' ' + monthNames[monthIndex];
+    return dateOfFixtures.substr(0, 4) + day + sDaySuffix + ' ' + monthNames[monthIndex];
 }
 
 
-export function getPositionInArrayOfObjects(array, objectProperty, objectValue) {
+export function getPositionInArrayOfObjects(array, objectProperty, objectValue) : number {
     let i: number = 0;
     let len;
 

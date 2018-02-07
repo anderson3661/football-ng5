@@ -9,9 +9,9 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
     templateUrl: './tables.component.html',
     styleUrls: [
         '../../../node_modules/font-awesome/css/font-awesome.min.css',
-        './../zzz-other/css/fixtures.css',
-        './../zzz-other/css/tables.css',
-        './tables.component.css'
+        './../zzz-other/css/fixtures.scss',
+        './../zzz-other/css/tables.scss',
+        './tables.component.scss'
     ]
 })
 export class TablesComponent implements OnInit {
@@ -21,8 +21,10 @@ export class TablesComponent implements OnInit {
     @Input() tableInPlay: TablesModel;
     @Input() tableBeforeFixtures: TablesModel;
 
-    private table: TablesModel;
-    private tableTypeFull: boolean;
+    public table: TablesModel;
+    public tableTypeFull: boolean;
+    public hasSeasonStarted: boolean;    
+    public hasSeasonFinished: boolean;
 
     constructor(private dataService: DataService,
         private route: ActivatedRoute) { }
@@ -37,16 +39,19 @@ export class TablesComponent implements OnInit {
         this.tableTypeFull = !(urlParam === null || urlParam === undefined);     // If the url returns just tables then set to false; if it returns tables + any value (e.g. tables/full) then set to true
         this.tableTypeInPlay = (this.tableTypeInPlay === null || this.tableTypeInPlay === undefined) ? false : this.tableTypeInPlay;
 
+        this.hasSeasonStarted = this.dataService.appData.miscInfo.hasSeasonStarted;        
+        this.hasSeasonFinished = this.dataService.appData.miscInfo.hasSeasonFinished;
+
         // <app-tables [tableTypeFull]=true></app-tables>  was in tables-full.component before
         // this.viewContext = {tableType: this.tableTypeFull};
 
     }
 
     // This is required by the html file as it is called then.
-    private getPositionInArrayOfObjectsThis(array, objectProperty, obJectValue): number {
+    private getPositionInArrayOfObjectsThis(array, objectProperty, objectValue): number {
 
         //Call the function in the helpers file.  Needs to be done like this so that the function can be referenced in the html file with ngClass
-        return helpers.getPositionInArrayOfObjects(array, objectProperty, obJectValue);
+        return helpers.getPositionInArrayOfObjects(array, objectProperty, objectValue);
     }
 
 }

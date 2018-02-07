@@ -32,7 +32,7 @@ table.fixtures.results, table.fixtures.latest {
     font-size: 1.1em;
 }
 
-.fixtures-row [id^=homeTeam], .fixtures-row [id^=awayTeam], .fixtures-row-latest [id^=homeTeam], .fixtures-row-latest [id^=awayTeam] {
+.fixtures-row [id^=homeTeamsName], .fixtures-row [id^=awayTeamsName], .fixtures-row-latest [id^=homeTeamsName], .fixtures-row-latest [id^=awayTeamsName] {
     width: auto;
     width: 47%;
     padding-top: 8px;
@@ -98,6 +98,7 @@ table.fixtures.results, table.fixtures.latest {
 .fixtures-row-latest .versus {
     text-align: center;
     padding-top: 8px;
+    width: 8px;
 }
 
 .fixtures-row .activeScore, .fixtures-row-latest .activeScore {
@@ -119,6 +120,20 @@ table.fixtures.results, table.fixtures.latest {
 .fixtures-row-scores {
     font-size: 0.8em;
     color: #888;
+}
+
+.fixtures-row.team-stats [id^=homeTeamsName] {
+    width: 27%;
+}
+
+.fixtures-row.team-stats [id^=awayTeamsName] {
+    width: 47%;
+}
+
+.fixtures-row .fixtureDate {
+    width: 20%;
+    font-size: 0.9em;
+    font-weight: normal;
 }
 
 .fa-arrow-down { color: #fa8787; }

@@ -1,5 +1,8 @@
+import { DialogComponent } from './../../dialog/dialog.component';
 import { TeamsModel, AllFixturesModel, TablesModel, AppDataModel } from '../interfaces/interfaces';
 import { Injectable } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material';
+
 
 const APP_DATA_LOCAL_STORAGE = "football_AppInfo";
 
@@ -40,32 +43,20 @@ export class DataService {
 
     public appData: AppDataModel;
 
-    constructor() {
+    constructor(public dialog: MatDialog) {
         this.appData = <AppDataModel>{};
-        this.getAppInfo();
+        debugger;
+        this.getAppData();
     }
 
-    saveAppData(): void {
+    public saveAppData(confirmSaveMessage?: boolean): void {
         this.contractSeasonValue();
         localStorage.setItem(APP_DATA_LOCAL_STORAGE, JSON.stringify(this.appData));
         this.expandSeasonValue();
+        if (confirmSaveMessage) this.confirmationMessage("Changes saved");
     }
 
-    resetSeason(): boolean {
-        if (confirm("Are you sure you want to reset the season ?")) {
-            this.appData.teamsForSeason = TEAMS_DEFAULT;
-            this.appData.allFixtures = <AllFixturesModel>{};
-            this.appData.latestTable = [];
-            this.appData.miscInfo.dateOfLastSetOfFixtures = '';
-            this.appData.miscInfo.numberOfTeams = this.appData.teamsForSeason.length;
-            this.createTable();
-            this.saveAppData();
-            return true;
-        }
-        return false;
-    }
-
-    private getAppInfo(): void {
+    private getAppData(): void {
         let appDataFromLocalStorage: string = "";
 
         if (typeof (Storage) !== "undefined") {
@@ -73,50 +64,57 @@ export class DataService {
             appDataFromLocalStorage = localStorage.getItem(APP_DATA_LOCAL_STORAGE);
 
             if (appDataFromLocalStorage === null) {
-                if (confirm(APP_DATA_LOCAL_STORAGE + " not found in local storage ... do you want to create a new game ?")) {
-                    this.setAppDataDefaults();
-                    this.saveAppData();
-                } else {
-                    return null;
-                }
+
+                this.confirmNewGame("Do you want to create a new game ?", APP_DATA_LOCAL_STORAGE + " not found in local storage");
 
             } else {
 
                 this.appData = JSON.parse(appDataFromLocalStorage);
 
                 if (this.appData.miscInfo.season === null) {
-                    alert("Cannot continue ... 'Season' property is blank in local storage item " + APP_DATA_LOCAL_STORAGE);
-                    return null;
+                    this.confirmationMessage("Cannot continue ... 'Season' property is blank in local storage item " + APP_DATA_LOCAL_STORAGE);
                 } else {
                     this.expandSeasonValue();
                 }
             }
 
         } else {
-            alert("Sorry ... cannot use this application because your browser doesn't support local storage");
-            return null;
+            this.confirmationMessage("Sorry ... cannot use this application because your browser doesn't support local storage");
         }
+
     }
 
-    private setAppDataDefaults(): void {
+    private setAppData(useDefaults: boolean): void {
         this.appData.teamsForSeason = TEAMS_DEFAULT;
         this.appData.allFixtures = <AllFixturesModel>{};
         this.appData.latestTable = [];
-        this.appData.miscInfo = {
-            season: "1718",
-            seasonStartDate: "05 Aug 2017",
-            dateOfLastSetOfFixtures: '',
-            factorBaseForRandomMultiplier: FACTOR_BASE_FOR_RANDOM_MULTIPLIER,
-            factorAwayTeam: FACTOR_AWAY_TEAM,
-            factorIsNotATopTeam: FACTOR_IS_NOT_A_TOP_TEAM,
-            factorLikelihoodOfAGoalDuringASetPeriod: FACTOR_GOALS_PER_MINUTE,
-            factorIsItAGoal: FACTOR_IS_IT_A_GOAL,
-            numberOfFixturesForSeason: NUMBER_OF_FIXTURES_FOR_SEASON,
-            matchUpdateInterval: MATCH_UPDATE_INTERVAL,
-            numberOfTeams: this.appData.teamsForSeason.length
-        };
-        this.createTable();
-        this.expandSeasonValue();
+
+        if (useDefaults) {
+            this.appData.miscInfo = {
+                season: "1718",
+                seasonStartDate: "05 Aug 2017",
+                dateOfLastSetOfFixtures: '',
+                factorBaseForRandomMultiplier: FACTOR_BASE_FOR_RANDOM_MULTIPLIER,
+                factorAwayTeam: FACTOR_AWAY_TEAM,
+                factorIsNotATopTeam: FACTOR_IS_NOT_A_TOP_TEAM,
+                factorLikelihoodOfAGoalDuringASetPeriod: FACTOR_GOALS_PER_MINUTE,
+                factorIsItAGoal: FACTOR_IS_IT_A_GOAL,
+                numberOfFixturesForSeason: NUMBER_OF_FIXTURES_FOR_SEASON,
+                matchUpdateInterval: MATCH_UPDATE_INTERVAL,
+                numberOfTeams: this.appData.teamsForSeason.length,
+                hasSeasonStarted: false,
+                hasSeasonFinished: false
+            };
+            this.expandSeasonValue();
+        } else {
+            this.appData.miscInfo.dateOfLastSetOfFixtures = '';
+            this.appData.miscInfo.numberOfTeams = this.appData.teamsForSeason.length;
+            this.appData.miscInfo.hasSeasonStarted = false;
+            this.appData.miscInfo.hasSeasonFinished = false;
+        }
+
+        this.createTable(this.appData.latestTable);
+        this.saveAppData();
     }
 
     private expandSeasonValue(): void {
@@ -131,12 +129,12 @@ export class DataService {
         }
     }
 
-    private createTable(): void {
+    public createTable(table): void {
         //Populate the table array with blank values
         let i: number;
 
         for (i = 0; i < this.appData.miscInfo.numberOfTeams; i++) {
-            this.appData.latestTable.push({
+            table.push({
                 teamName: this.appData.teamsForSeason[i].teamName,
                 played: 0,
                 won: 0,
@@ -163,11 +161,63 @@ export class DataService {
 
     public haveSeasonsFixturesBeenCreated(): boolean {
         // Called from various places to see if the season's fixtures have been created
-        if (this.appData.allFixtures.length === 0) {
-            alert("Cannot continue ... please create fixtures for the season via Administration");
-            return false;
-        }
-        return true;
+        return (this.appData.allFixtures.length !== undefined && this.appData.allFixtures.length > 0)
     }
+
+    private confirmNewGame(title: string, info?: string) {
+        let dialogRef: MatDialogRef<any>;
+
+        dialogRef = this.dialog.open(DialogComponent, {
+            data: {
+                title: title,
+                info: info
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            debugger;
+            if (result) {
+                this.setAppData(true);
+                window.location.reload();           //Refresh the current window as Angular doesn't
+                return true;
+            }
+            // console.log('Dialog result: ' + result.toString());
+        });
+
+        return false;
+    }
+
+    public confirmResetSeason(title: string, functionIfYes) {
+        let dialogRef: MatDialogRef<any>;
+
+        dialogRef = this.dialog.open(DialogComponent, {
+            data: {
+                title: title,
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            debugger;
+            if (result) {
+                functionIfYes();
+                return true;
+            }
+        });
+
+        return false;
+    }
+
+    public confirmationMessage(title: string, info?: string) {
+        let dialogRef: MatDialogRef<any>;
+
+        dialogRef = this.dialog.open(DialogComponent, {
+            data: {
+                title: title,
+                info: info,
+                informationOnly: true
+            }
+        });
+    }
+
 
 }

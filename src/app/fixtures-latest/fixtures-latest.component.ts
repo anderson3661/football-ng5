@@ -15,26 +15,28 @@ const EXTRA_MINUTES_SECOND_HALF = 9;
     templateUrl: './fixtures-latest.component.html',
     styleUrls: [
         '../../../node_modules/font-awesome/css/font-awesome.min.css',
-        './../zzz-other/css/fixtures.css',
-        './../zzz-other/css/tables.css',        
-        './fixtures-latest.component.css',
+        './../zzz-other/css/fixtures.scss',
+        './../zzz-other/css/tables.scss',        
+        './fixtures-latest.component.scss',
     ]
 })
 export class FixturesLatestComponent implements OnInit {
 
     private teams: TeamsModel;
-    private fixturesForSeason: AllFixturesModel;
+    public fixturesForSeason: AllFixturesModel;
     public tableBeforeFixtures: TablesModel;
     public tableInPlay: TablesModel;
     public latestFixtures: SetOfFixturesModel;
     private dateOfLastSetOfFixtures: string;
+    public formattedDateOfFixtures: string;
+    public displayHeader: string;    
 
     public setOfFixturesController: SetOfFixturesControllerModel;
 
     private progressMatches;
 
     private tableTypeInPlay: boolean;                         // Required by the HTML - also used by fixtures-latest.component (i.e. in the html call)
-    
+    public hasSeasonFinished: boolean;
 
 
     constructor(private dataService: DataService) { }
@@ -46,6 +48,17 @@ export class FixturesLatestComponent implements OnInit {
         this.fixturesForSeason = this.dataService.appData.allFixtures;
         this.tableBeforeFixtures = this.dataService.appData.latestTable;
         this.dateOfLastSetOfFixtures = this.dataService.appData.miscInfo.dateOfLastSetOfFixtures;
+
+        this.hasSeasonFinished = this.dataService.appData.miscInfo.hasSeasonFinished;
+
+        if (this.fixturesForSeason.length === undefined) {
+            this.displayHeader = "New game ... please create fixtures for the season via Administration";
+        } else if (this.hasSeasonFinished) {
+            this.displayHeader = "Season finished";
+        } else {
+            this.displayHeader = "Premiership Football";
+        }
+
 
         if (this.dataService.haveSeasonsFixturesBeenCreated()) {
 
@@ -81,24 +94,13 @@ export class FixturesLatestComponent implements OnInit {
 
             if (this.latestFixtures != undefined) {
                 this.setOfFixturesController.dateOfThisSetOfFixtures = this.latestFixtures.dateOfSetOfFixtures;
+                this.formattedDateOfFixtures = helpers.formatDate(this.latestFixtures.dateOfSetOfFixtures);                       
                 this.setScoresAndGoals("");
                 this.setupInPlayTable();
             }
 
-        }
-    }
+            this.setOfFixturesController.startFixturesButtonEnabled = true;           //Enable the Start Fixtures button
 
-    private getNextSetOfFixtures(): SetOfFixturesModel {
-        let i: number = 0;
-
-        if (this.dateOfLastSetOfFixtures === "" || this.dateOfLastSetOfFixtures === undefined || this.dateOfLastSetOfFixtures === null) {
-            return this.fixturesForSeason[0];
-        } else {
-            for (i = 0; i < this.fixturesForSeason.length; i++) {
-                if (this.fixturesForSeason[i].dateOfSetOfFixtures === this.dateOfLastSetOfFixtures) {
-                    return this.fixturesForSeason[i + 1];
-                }
-            }
         }
     }
 
@@ -173,21 +175,49 @@ export class FixturesLatestComponent implements OnInit {
             if (self.setOfFixturesController.isFirstHalf) {
                 self.setOfFixturesController.minutesInfo = "Half-Time";
                 self.setOfFixturesController.isFirstHalf = false;
-                self.setOfFixturesController.startFixturesButtonEnabled = true;           //Enable the Start Fixtures button
+                self.setOfFixturesController.startFixturesButtonEnabled = true;           // Enable the Start Fixtures button
                 self.setOfFixturesController.startFixturesButtonText = "Start Second Half";
             } else {
-                debugger;
                 self.setOfFixturesController.minutesInfo = "Full-Time";
+                self.setOfFixturesController.startFixturesButtonEnabled = false;           // Disable the Start Fixtures button
+                debugger;
                 self.dataService.appData.miscInfo.dateOfLastSetOfFixtures = self.setOfFixturesController.dateOfThisSetOfFixtures;
-                self.dataService.appData.latestTable = self.tableInPlay;
+                self.dataService.appData.latestTable = self.tableInPlay;                
+                self.dataService.appData.miscInfo.hasSeasonStarted = true;
+
+                for (fixtureCounter = 0; fixtureCounter < self.latestFixtures.fixtures.length; fixtureCounter++) {
+                    self.latestFixtures.fixtures[fixtureCounter].hasFixtureBeenPlayed = true;
+                }
+                    
+                if (self.getNextSetOfFixtures().dateOfSetOfFixtures === "") self.dataService.appData.miscInfo.hasSeasonFinished = true;     //This statement needs to be after dateOfLastSetOfFixtures is set just above
                 self.dataService.saveAppData();
             }
         } else {
-            self.setOfFixturesController.minutesInfo = self.setOfFixturesController.minutesPlayed + " mins";
+            self.setOfFixturesController.minutesInfo = self.setOfFixturesController.minutesPlayed + ((self.setOfFixturesController.minutesPlayed === 1) ? " min" : " mins");
         }
 
     }
 
+    private getNextSetOfFixtures(): SetOfFixturesModel {
+        let i: number = 0;
+        let setOfBlankFixtures: SetOfFixturesModel;
+    
+        this.dateOfLastSetOfFixtures = this.dataService.appData.miscInfo.dateOfLastSetOfFixtures;
+        this.fixturesForSeason = this.dataService.appData.allFixtures;
+    
+        if (this.dateOfLastSetOfFixtures === "" && ! this.dataService.appData.miscInfo.hasSeasonStarted) {
+            return this.fixturesForSeason[0];
+        } else {
+            for (i = 0; i < this.fixturesForSeason.length; i++) {
+                if (this.fixturesForSeason[i].dateOfSetOfFixtures === this.dateOfLastSetOfFixtures && i !== this.fixturesForSeason.length - 1) {
+                    return this.fixturesForSeason[i + 1];
+                }
+            }
+        }
+    
+        return helpers.getEmptySetOfFixtures();
+    }
+    
     private hasTeamScored(whichTeam: string, self: this, fixtureCounter: number, minutesinMatchFactor: number): boolean {
         let thisTeam: string;
         let awayTeamFactor: number;

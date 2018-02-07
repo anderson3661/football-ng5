@@ -3,17 +3,15 @@ import { Team } from '../zzz-other/classes/team';
 import { SetOfFixtures } from '../zzz-other/classes/set-of-fixtures';
 import { SetOfFixturesModel, FixturesDatesModel } from '../zzz-other/interfaces/interfaces';
 import * as helpers from '../zzz-other/helper-functions/helpers';
-
 import { Component, OnInit } from '@angular/core';
-// import { MatCardModule } from '@angular/material/card';
 
 const NUMBER_OF_ATTEMPTS_TO_GET_SET_OF_TEAMS = 100000;
 
 
 @Component({
-    selector:   'app-administration',
-    templateUrl:'./administration.component.html',
-    styleUrls:  ['./administration.component.css']
+    selector: 'app-administration',
+    templateUrl: './administration.component.html',
+    styleUrls: ['./administration.component.scss']
 })
 export class AdministrationComponent implements OnInit {
 
@@ -30,6 +28,14 @@ export class AdministrationComponent implements OnInit {
     }
 
     createFixturesForSeason(): void {
+        if (this.dataService.haveSeasonsFixturesBeenCreated()) {
+            this.dataService.confirmResetSeason("Are you sure you want to reset the season ?", this.createFixtures.bind(this));
+        } else {
+            this.createFixtures();
+        }
+    }
+
+    createFixtures(): void {
         let dateOfSetOfFixtures: string = "";
         let i: number = 0;
         let retryCounter: number = 0;
@@ -41,63 +47,60 @@ export class AdministrationComponent implements OnInit {
 
         dateOfSetOfFixtures = this.dataService.appData.miscInfo.seasonStartDate;
         numberOfFixturesForSeason = this.dataService.appData.miscInfo.numberOfFixturesForSeason;
+        
+        // if (this.dataService.resetSeason()) {        //Reset the season indicators
 
-        //Reset the season indicators
-        if (this.dataService.resetSeason()) {
-            debugger;
-            
-            // Populate the datesOfFixturesForSeason array, an element for every set of fixtures in the season
-            for (i = 0; i < numberOfFixturesForSeason; i++) {
-                datesOfFixturesForSeason.push({ 'date': dateOfSetOfFixtures = this.getFixturesDate(dateOfSetOfFixtures), 'numberOfMatches': numberOfFixturesForSeason.toString() });
-            }
+        // Populate the datesOfFixturesForSeason array, an element for every set of fixtures in the season
+        for (i = 0; i < numberOfFixturesForSeason; i++) {
+            datesOfFixturesForSeason.push({ 'date': dateOfSetOfFixtures = this.getFixturesDate(dateOfSetOfFixtures), 'numberOfMatches': numberOfFixturesForSeason.toString() });
+        }
 
-            // Populate the teams array, an element for each team, containing properties and numerous methods
-            for (i = 0; i < this.dataService.appData.teamsForSeason.length; i++) {
-                this.teams.push(new Team(this.dataService, i));
-            }
-            
-            for (setOfFixturesCounter = 0; setOfFixturesCounter < numberOfFixturesForSeason; setOfFixturesCounter++) {
+        // Populate the teams array, an element for each team, containing properties and numerous methods
+        for (i = 0; i < this.dataService.appData.teamsForSeason.length; i++) {
+            this.teams.push(new Team(this.dataService, i));
+        }
 
-                console.log('');
-                console.log('Starting fixture set ' + (setOfFixturesCounter + 1));
-
-                if (setOfFixturesCounter === 32) {
-                    console.log('');
-                }
-
-                retryCounter = 0;
-
-                this.setOfFixtures = undefined;
-
-                while (this.setOfFixtures === undefined || this.setOfFixtures.fixtures === undefined) {
-
-                    this.setOfFixtures = {
-                        fixtures: (new SetOfFixtures(this.dataService, this.teams)).createSetOfFixtures(),
-                        dateOfSetOfFixtures: datesOfFixturesForSeason[setOfFixturesCounter].date
-                    };
-                    
-                    retryCounter++;
-                    if (retryCounter > NUMBER_OF_ATTEMPTS_TO_GET_SET_OF_TEAMS) {
-                        console.log('Cannot get teams for set of fixtures');
-                        alert('Cannot create fixtures for season ... ' + fixturesForSeason.length + ' sets of fixtures created');
-                        return;
-                    }
-                }
-
-                this.updateCheckArrays();
-
-                fixturesForSeason.push(this.setOfFixtures);        //Update the array - this is used to output the matches to the web page
-            }
-
-            //Update the All Fixtures array in the data service and save
-            this.dataService.appData.allFixtures = fixturesForSeason;
-            this.dataService.saveAppData();
+        for (setOfFixturesCounter = 0; setOfFixturesCounter < numberOfFixturesForSeason; setOfFixturesCounter++) {
 
             console.log('');
-            console.log('Finished');
+            console.log('Starting fixture set ' + (setOfFixturesCounter + 1));
 
-            alert('Fixtures created for season');
+            if (setOfFixturesCounter === 32) {
+                console.log('');
+            }
+
+            retryCounter = 0;
+
+            this.setOfFixtures = undefined;
+
+            while (this.setOfFixtures === undefined || this.setOfFixtures.fixtures === undefined) {
+
+                this.setOfFixtures = {
+                    fixtures: (new SetOfFixtures(this.dataService, this.teams)).createSetOfFixtures(),
+                    dateOfSetOfFixtures: datesOfFixturesForSeason[setOfFixturesCounter].date
+                };
+
+                retryCounter++;
+                if (retryCounter > NUMBER_OF_ATTEMPTS_TO_GET_SET_OF_TEAMS) {
+                    console.log('Cannot get teams for set of fixtures');
+                    alert('Cannot create fixtures for season ... ' + fixturesForSeason.length + ' sets of fixtures created');
+                    return;
+                }
+            }
+
+            this.updateCheckArrays();
+
+            fixturesForSeason.push(this.setOfFixtures);        //Update the array - this is used to output the matches to the web page
         }
+
+        //Update the All Fixtures array in the data service and save
+        this.dataService.appData.allFixtures = fixturesForSeason;
+        this.dataService.saveAppData();
+
+        console.log('');
+        console.log('Finished');
+
+        this.dataService.confirmationMessage("Fixtures created for season");
     }
 
     private updateCheckArrays(): void {
@@ -129,12 +132,11 @@ export class AdministrationComponent implements OnInit {
     private getFixturesDate(date: string): string {
         let fixturesDate: Date;
         let fixturesDateNew: Date;
-    
+
         fixturesDate = new Date(date);
         fixturesDateNew = new Date(fixturesDate);
         fixturesDateNew.setDate(fixturesDateNew.getDate() + 7);
         return fixturesDateNew.toDateString();
     }
-    
 
 }

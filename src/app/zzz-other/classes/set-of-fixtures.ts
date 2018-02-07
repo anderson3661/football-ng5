@@ -1,3 +1,4 @@
+import { FixturesModel, TeamsModel, MiscInfoModel } from './../interfaces/interfaces';
 import { DataService } from '../services/data.service';
 import * as helpers from './../helper-functions/helpers';
 import { Team } from './team';
@@ -13,8 +14,8 @@ export class SetOfFixtures {
     private mandatoryHomeTeams: any[] = [];
     private mandatoryAwayTeams: any[] = [];
 
-    private appDataTeams;
-    private appDataMiscInfo;
+    private appDataTeams: TeamsModel;
+    private appDataMiscInfo: MiscInfoModel;
     private numberOfTeams: number;
 
     constructor(private dataService: DataService, teams) {
@@ -26,13 +27,15 @@ export class SetOfFixtures {
 
 
     createSetOfFixtures(): any[] {
-        let i: number = 0;
-        let numberOfMatches: number = 0;
-        let validTeam: string = "";
-        let setOfFixtures: any[] = [];
+        let i: number;
+        let numberOfMatches: number;
+        let validTeam: string;
+        let setOfFixtures: FixturesModel;
 
         this.mandatoryHomeTeams = this.getMandatoryTeams("H").reverse();        //Get the mandatory home teams and reverse the array so that the remaining array works ok below
         this.mandatoryAwayTeams = this.getMandatoryTeams("A").reverse();        //Get the mandatory away teams and reverse the array so that the remaining array works ok below        
+
+        setOfFixtures = [];
 
         while (true) {
             this.teamsSelected = [];
@@ -60,7 +63,7 @@ export class SetOfFixtures {
             if (this.remainingTeams.length === 0 && this.teamsSelected.length === this.numberOfTeams) {
                 numberOfMatches = this.numberOfTeams / 2;
                 for (i = 0; i < this.teamsSelected.length / 2; i++) {
-                    setOfFixtures.push({ 'homeTeam': this.teamsSelected[i], 'awayTeam': this.teamsSelected[i + numberOfMatches] })
+                    setOfFixtures.push({ 'homeTeam': this.teamsSelected[i], 'awayTeam': this.teamsSelected[i + numberOfMatches], hasFixtureBeenPlayed: false })
                 }
                 return setOfFixtures;
             }
@@ -169,7 +172,7 @@ export class SetOfFixtures {
 
     private checkWhoHomeTeamsHaveLeftToPlay(arrayIndex): void {
         let teamsLeft: any[] = [];
-        let aThisTeam;
+        let thisTeam;
         let homeTeam: string;
         let teamPlayedAtHome: string;
         let logTeamsLeft: string = "";
@@ -181,9 +184,10 @@ export class SetOfFixtures {
             teamsLeft = this.appDataTeams.slice();
             // sHomeTeam = aSetOfFixtures.Teams[i];
             homeTeam = this.teamsSelected[i];
-            aThisTeam = this.teams[this.appDataTeams.indexOfObject("teamName", homeTeam)];
-            for (arrayIndex = 0; arrayIndex < aThisTeam.teamsPlayedAtHome.length; arrayIndex++) {
-                teamPlayedAtHome = aThisTeam.teamsPlayedAtHome[arrayIndex].teamName;
+            // aThisTeam = this.teams[this.appDataTeams.indexOfObject("teamName", homeTeam)];
+            thisTeam = this.teams[helpers.getPositionInArrayOfObjects(this.appDataTeams, "teamName", homeTeam)];
+            for (arrayIndex = 0; arrayIndex < thisTeam.teamsPlayedAtHome.length; arrayIndex++) {
+                teamPlayedAtHome = thisTeam.teamsPlayedAtHome[arrayIndex].teamName;
                 // var nTeamFound = aTeamsLeft.indexOf(sTeamPlayedAtHome);
                 arrayIndexOfTeamFound = helpers.getPositionInArrayOfObjects(teamsLeft, "teamName", teamPlayedAtHome);
                 if (arrayIndexOfTeamFound !== -1) {
@@ -196,7 +200,7 @@ export class SetOfFixtures {
                 teamsLeft.splice(arrayIndexOfTeamFound, 1);
             }
 
-            if (aThisTeam.orderOfFixtures.length > 32) {
+            if (thisTeam.orderOfFixtures.length > 32) {
                 logTeamsLeft = "";
                 for (j = 0; j < teamsLeft.length; j++) {
                     logTeamsLeft += teamsLeft[j].teamName + ", ";
