@@ -1,0 +1,72 @@
+<div class="container-main-content">
+
+    <div class="container-card">
+        <header>
+            <h1>Contact</h1>
+            <p>If you have any comments about this application, please complete the details below:</p>
+        </header>
+
+        <div class="contact">
+            <div class="main-form">
+                <!-- <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()"> -->
+                <form class="contact-form" [formGroup]="contactForm">
+
+                    <mat-form-field class="contact-form-full-width">
+                        <!-- <input matInput placeholder="Your name" [formControl]="name" [errorStateMatcher]="matcher"> -->
+                        <input matInput placeholder="Your name" formControlName="name">
+                        <!-- <mat-hint>Errors appear instantly!</mat-hint> -->
+                        <mat-error *ngIf="contactForm.get('name').hasError('required') && contactForm.get('name').touched">
+                            Your name is
+                            <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="contact-form-full-width">
+                        <!-- <input matInput placeholder="Your email address" [formControl]="emailAddress"> -->
+                        <input matInput placeholder="Your email address" formControlName="emailAddress">
+                        <mat-error *ngIf="contactForm.get('emailAddress').hasError('email') && !contactForm.get('emailAddress').hasError('required') && contactForm.get('emailAddress').touched">
+                            Please enter a valid email address
+                        </mat-error>
+                        <mat-error *ngIf="contactForm.get('emailAddress').hasError('required') && contactForm.get('emailAddress').touched">
+                            Your email address is
+                            <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="contact-form-full-width">
+                        <!-- <textarea matInput placeholder="Your comment(s)" [formControl]="comments" matTextareaAutosize matAutosizeMinRows="8" matAutosizeMaxRows="8"></textarea> -->
+                        <textarea matInput placeholder="Your comment(s)" formControlName="comments" matTextareaAutosize matAutosizeMinRows="8" matAutosizeMaxRows="8"></textarea>
+                        <mat-error *ngIf="contactForm.get('comments').hasError('required') && contactForm.get('comments').touched">
+                            Your comment(s) are
+                            <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+
+                </form>
+
+                <div class="submit-button">
+                    <!-- <a target="_blank" [href]="'mailto:martin.anderson3661@gmail.com?subject=' + name.value + '&amp;body=' + comments.value"> -->
+                        <!-- <button disabled mat-raised-button color="accent" (click)="submit($event)">Submit</button> -->
+                        <!-- <button mat-raised-button color="accent" [disabled]="name.hasError('required') || emailAddress.hasError('required') || (emailAddress.hasError('email') && !yourEmail.hasError('required')) || comments.hasError('required')">Submit</button> -->
+                        <button mat-raised-button color="accent" type="submit" (click)="onSubmit()" [disabled]="contactForm.pristine">Send</button>
+                    <!-- </a> -->
+                </div>
+                
+                <div>
+                    <!-- <p *ngIf="form.valid">Invalid ... please check the details above</p> -->
+                    <p *ngIf="showFormInvalidMessage" class="invalid-form-message">Invalid ... please check the details highlighted in red above</p>
+                </div>
+                
+                <div *ngIf="isDebugging">
+                    <p>Form Value: {{ contactForm.value | json }}</p>
+                    <p>Form Status: {{ contactForm.status | json }}</p>
+                    <p>Errors: {{ contactForm.controls.name?.errors | json }}</p>
+                    <p>Errors: {{ contactForm.controls.emailAddress?.errors | json }}</p>
+                    <p>Errors: {{ contactForm.get('emailAddress').errors | json }}</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

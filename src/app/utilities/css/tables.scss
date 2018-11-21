@@ -1,0 +1,119 @@
+@import '~sass/variables';
+@import '~sass/mixins';
+
+/* All tables */
+
+.main-content {
+    h1 { text-align: center; margin-bottom: 25px; }
+}
+
+.league-table, .league-table-full { border-collapse: collapse; }
+
+.league-table-header {
+    font-size: $font-size-league-table-header;
+    font-weight: bold;
+    line-height: 30px;
+    background-color: $background-color-league-table-header;
+}
+
+.league-table-teamName {
+    font-family: $font-family-main;
+    a { color: $link-color-league-table-team-name; }
+}
+
+.league-table-form-cell {
+    font-family: $font-family-league-table-form-cell;
+    font-size: $font-size-league-table-form-cell;
+    color: $color-league-table-form-cell;
+}
+
+.league-table-form-cell.W { background-color: $color-league-table-form-cell-win; }
+.league-table-form-cell.D { background-color: $color-league-table-form-cell-draw; }
+.league-table-form-cell.L { background-color:$color-league-table-form-cell-loss; }
+
+.league-table-row { border-bottom: 1px solid $color-league-table-row-border-bottom; }
+.league-table-points { border-right: 1px solid $color-league-table-row-border-bottom; }
+   
+
+/* Standard League Table */
+.league-table {
+    .league-table-row td { padding-top: 8px; padding-bottom: 8px; }
+    .league-table-position { @include table-column(3%, inherit, left, 0, 0); }
+    // .league-table-movement { @include table-column(4%, normal, left, 0, 0); }
+    .league-table-teamName { @include table-column(20%, bold, left, 0, 0); }
+    .league-table-played { @include table-column(4%, inherit, right, 0, 0); }
+    .league-table-won { @include table-column(4%, inherit, right, 40px, 0); }
+    .league-table-drawn { @include table-column(4%, inherit, right, 0, 0); }
+    .league-table-lost { @include table-column(4%, inherit, right, 0, 0); }
+    .league-table-goalsFor { @include table-column(5%, inherit, right, 50px, 0); }
+    .league-table-goalsAgainst { @include table-column(5%, inherit, right, 0, 0); }
+    .league-table-goalDifference { @include table-column(5%, inherit, right, 50px, 0); }
+    .league-table-points { @include table-column(10%, bold, right, 0, 20px); }
+    .league-table-form-cell { @include table-column(8%, bold, left, 0, 0); }
+
+    .league-table-form-cell { padding: 3px; margin-right: 3px; }
+    .league-table-form-cell:first-child { margin-left: 20px;}
+
+    .league-table-form-header { padding-left: 20px; }
+}
+
+
+/* Full League Table */
+.league-table-full {
+    .league-table-row td { padding-top: 8px; padding-bottom: 8px; }
+    .league-table-position { @include table-column(3%, inherit, left, 0, 0); }
+    // .league-table-movement { @include table-column(1%, normal, left, 0, 0); }
+    .league-table-teamName { @include table-column(18%, bold, left, 0, 0); }
+    .league-table-played { @include table-column(3%, inherit, right, 0, 0); }
+    .league-table-won { @include table-column(3%, inherit, right, 40px, 0); }
+    .league-table-drawn { @include table-column(3%, inherit, right, 0, 0); }
+    .league-table-lost { @include table-column(3%, inherit, right, 0, 0); }
+    .league-table-goalsFor { @include table-column(4%, inherit, right, 30px, 0); }
+    .league-table-goalsAgainst { @include table-column(4%, inherit, right, 0, 0); }
+    .league-table-goalDifference { @include table-column(4%, inherit, right, 40px, 0); }
+    .league-table-points { @include table-column(8%, bold, right, 0, 15px); }
+    .league-table-form-cell { @include table-column(8%, inherit, left, 0, 0); }
+
+    .league-table-form-cell { padding: 3px; margin-right: 1px; }
+    .league-table-form-cell:first-child { margin-left: 15px;}
+
+    .league-table-form-header { padding-left: 15px; }
+}
+
+
+/* In-Play League Table */
+.league-table-in-play {    
+    line-height: $line-height-league-table-summary;
+    font-size: $font-size-league-table-summary;
+    h3 { font-size: 1.1rem; font-weight: bold; }
+    .league-table-row td { padding-top: 6px; padding-bottom: 6px; }
+    .league-table-position { @include table-column(2%, inherit, left, 0, 0); }
+    .league-table-movement { @include table-column(5%, inherit, center, 0, 0); }
+    .league-table-teamName { @include table-column(25%, bold, left, 0, 0); }
+    .league-table-played { @include table-column(4%, inherit, right, 0, 0); }
+    .league-table-won { @include table-column(4%, inherit, right, 20px, 0); }
+    .league-table-drawn { @include table-column(4%, inherit, right, 0, 0); }
+    .league-table-lost { @include table-column(4%, inherit, right, 0, 0); }
+    // .league-table-goalsFor { @include table-column(5%, inherit, right, 40px, 0); }
+    // .league-table-goalsAgainst { @include table-column(5%, inherit, right, 0, 0); }
+    .league-table-goalDifference { @include table-column(5%, inherit, right, 20px, 0); }
+    .league-table-points { @include table-column(10%, bold, right, 0, 20px); }
+    .league-table-form-cell { @include table-column(10%, inherit, left, 0, 0); }
+
+    .league-table-form-cell { padding: 2px; margin-right: 1px; }
+    .league-table-form-cell:first-child { margin-left: 20px;}
+
+    .league-table-form-header { padding-left: 20px; }
+}
+
+
+.arrow-up, .arrow-down { font-size: 18px; font-weight: bold; height: 20px; line-height: 0.8em;}
+.arrow-up { color: $color-league-table-movement-arrow-up; }
+.arrow-down { color: $color-league-table-movement-arrow-down; }
+
+// .fa-arrow-down { color: #fa8787; }
+// .fa-arrow-up { color: #88c480; }
+
+.teamNameLink:hover {
+    text-decoration: underline;
+}

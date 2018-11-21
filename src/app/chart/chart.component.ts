@@ -4,7 +4,7 @@ import * as Chart from 'chart.js'
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.css'],
+  styleUrls: ['./chart.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class ChartComponent implements AfterViewInit {

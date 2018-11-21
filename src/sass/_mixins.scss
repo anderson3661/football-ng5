@@ -1,0 +1,14 @@
+@mixin score($color-score, $background-color-score) {
+    color: $color-score;
+    background-color: $background-color-score;
+    flex-basis: $width-fixture-row-team-score;
+    padding: 5px;
+}
+
+@mixin table-column($width, $fontWeight, $textAlign, $paddingLeft, $paddingRight) {
+    width: $width;
+    font-weight: $fontWeight;
+    text-align: $textAlign;
+    padding-left: $paddingLeft;
+    padding-right: $paddingRight;
+}

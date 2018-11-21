@@ -18,33 +18,19 @@ export class Team {
         this.numberOfTeams = dataService.appData.miscInfo.numberOfTeams;
     }
 
-    numberOfMatchesPlayed() {
-        return this.orderOfFixtures.length;
-    }
+    numberOfMatchesPlayed() { return this.orderOfFixtures.length; }
 
-    numberOfHomeGamesPlayed() {
-        return this.teamsPlayedAtHome.length;
-    }
+    numberOfHomeGamesPlayed() { return this.teamsPlayedAtHome.length; }
 
-    allHomeGamesPlayed() {
-        return (this.teamsPlayedAtHome.length === this.numberOfTeams - 1);
-    }
+    allHomeGamesPlayed() { return (this.teamsPlayedAtHome.length === this.numberOfTeams - 1); }
 
-    allAwayGamesPlayed() {
-        return (this.teamsPlayedAway.length === this.numberOfTeams - 1);
-    }
+    allAwayGamesPlayed() { return (this.teamsPlayedAway.length === this.numberOfTeams - 1); }
 
-    venueLast() {
-        return this.orderOfFixtures[this.orderOfFixtures.length - 1];
-    }
+    venueLast() { return this.orderOfFixtures[this.orderOfFixtures.length - 1]; }
 
-    venuePrevious() {
-        return this.orderOfFixtures[this.orderOfFixtures.length - 2];
-    }
+    venuePrevious() { return this.orderOfFixtures[this.orderOfFixtures.length - 2]; }
 
-    fixtureAlreadyPlayed(opposingTeam) {
-        return helpers.getPositionInArrayOfObjects(this.teamsPlayedAway, "teamName", opposingTeam) !== -1;
-    }
+    fixtureAlreadyPlayed(opposingTeam) { return helpers.getPositionInArrayOfObjects(this.teamsPlayedAway, "teamName", opposingTeam) !== -1; }
 
     wereLastTwoMatchesAtHome() {
         let nMatchesPlayed = this.numberOfMatchesPlayed();

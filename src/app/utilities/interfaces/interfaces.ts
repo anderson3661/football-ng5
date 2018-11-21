@@ -1,3 +1,6 @@
+import { Fixture } from '../classes/fixture';
+
+
 // Team(s) model
 interface TeamModel {
     teamName: string,
@@ -10,22 +13,28 @@ export interface TeamsModel extends Array<TeamModel> { }
 // Fixture(s) model
 interface FixturesDateModel {
     date: string;
-    numberOfMatches: string;
+    numberOfFixtures: string;
 }
 
 export interface FixturesDatesModel extends Array<FixturesDateModel> { }
 
-interface FixtureModel {
+export interface FixtureModel {
     homeTeam: string,
     awayTeam: string,
+    dateOfFixture?: string,
+    timeOfFixture?: string,
     homeTeamsScore?: number,
     awayTeamsScore?: number,
     homeTeamsGoals?: string,
     awayTeamsGoals?: string,
-    injuryTime1stHalf?: number,
-    injuryTime2ndHalf?: number,
+    isFirstHalf?: boolean,
+    injuryTimeFirstHalf?: number,
+    injuryTimeSecondHalf?: number,
+    statutoryMinutes?: number
     maxNumberOfMinutes?: number,
-    hasFixtureBeenPlayed: boolean
+    minutesPlayed?: number,
+    minutesInfo?: string,
+    hasFixtureFinished?: boolean
 }
 
 export interface FixturesModel extends Array<FixtureModel> { }
@@ -37,6 +46,12 @@ export interface SetOfFixturesModel {
 
 export interface AllFixturesModel extends Array<SetOfFixturesModel> { }
 
+export interface LatestFixturesModel extends Array<Fixture> { }
+
+export interface SetOfLatestFixturesModel {
+    dateOfSetOfFixtures: string,
+    fixtures: LatestFixturesModel
+}
 
 // Table(s) model
 export interface TableModel {
@@ -70,52 +85,31 @@ export interface MiscInfoModel {
     season: string,
     seasonStartDate: string,
     dateOfLastSetOfFixtures: string,
-    factorBaseForRandomMultiplier: number,
-    factorAwayTeam: number,
-    factorIsNotATopTeam: number,
-    factorLikelihoodOfAGoalDuringASetPeriod: string,
-    factorIsItAGoal: number,
-    numberOfFixturesForSeason: number,
-    matchUpdateInterval: number,
+    numberOfFixturesForSeason: number,    
     numberOfTeams: number,
+    haveSeasonsFixturesBeenCreated: boolean,
     hasSeasonStarted: boolean,
-    hasSeasonFinished: boolean
+    hasSeasonFinished: boolean,
+    goalFactors: GoalFactorsModel,
+    dataStorage: string
+}
+
+export interface GoalFactorsModel {
+    isAwayTeam: number,
+    isNotATopTeam: number,
+    baseForRandomMultiplier: number,
+    likelihoodOfAGoalDuringASetPeriod: string,
+    isItAGoal: number,
+    fixtureUpdateInterval: number
 }
 
 // App Data model
 export interface AppDataModel {
     miscInfo: MiscInfoModel;
     teamsForSeason: TeamsModel;
-    allFixtures: AllFixturesModel;
+    setsOfFixtures: AllFixturesModel;
     latestTable: TablesModel;
 }
-
-
-// Set of Fixtures Controller model
-export interface SetOfFixturesControllerModel {
-    dateOfThisSetOfFixtures: string,
-    factorBaseForRandomMultiplier: number,
-    factorLikelihoodOfAGoalDuringASetPeriod: any[],
-    factorAwayTeam: number,
-    factorIsNotATopTeam: number,
-    factorIsItAGoal: number,
-    maxNumberOfMinutes: number,
-    minutesPlayed: number,
-    minutesInfo: string,
-    maxInjuryTime1stHalf: number,
-    maxInjuryTime2ndHalf: number,
-    matchUpdateInterval: number,
-    isFirstHalf: boolean,
-    statutoryMinutes: number,
-    startFixturesButtonText: string,
-    startFixturesButtonEnabled: boolean,
-    fixturesInPlay: boolean,
-    versusBetweenTeams: string,
-    teamIn1stPlaceInTable: string,
-    teamIn2ndPlaceInTable: string,
-    teamIn3rdPlaceInTable: string
-}
-
 
 // Team Stats Controller model
 export interface TeamStatModel {
@@ -128,7 +122,7 @@ export interface TeamStatModel {
     awayTeamsGoals: string,
     winDrawLoss: string;
     positionInTable: number,
-    hasFixtureBeenPlayed: boolean    
+    hasFixtureFinished: boolean    
 }
 
 export interface TeamStatsModel extends Array<TeamStatModel> { }

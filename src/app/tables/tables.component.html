@@ -1,7 +1,7 @@
 <ng-container *ngIf="tableTypeInPlay; then tableInPlay; else tableOthers"></ng-container>
 
 <ng-template #tableInPlay>
-    <div id="league-table-latest">
+    <div class="league-table-in-play">
         <h3>As It Stands Table</h3>
         <ng-container *ngTemplateOutlet="restofTable"></ng-container>
     </div>
@@ -9,7 +9,7 @@
 
 
 <ng-template #tableOthers>
-    <div id="main-grid">
+    <div class="container-main-content">
         <h1>Premier League Table {{ hasSeasonFinished ? " - Final" : "" }}</h1>
         <ng-container *ngTemplateOutlet="restofTable"></ng-container>
     </div>
@@ -19,16 +19,16 @@
 
 <ng-template #restofTable>
 
-    <table id="league-table" class="league-table{{ tableTypeFull ? '-full' : '' }}">
-        <tbody id="league-table-body">
+    <table class="league-table{{ tableTypeFull ? '-full' : '' }}">
+        <tbody class="league-table-body">
 
             <!-- <ng-container *ngTemplateOutlet="leagueTable; context: viewContext"></ng-container> -->
             <!-- <ng-template #leagueTable let-tableTypeFull="tableType"> -->
-            <tr id="league-table-header">
+            <tr class="league-table-header">
                 <td class="league-table-position">&nbsp;</td>
-                <td class="league-table-movement">&nbsp;</td>
+                <td class="league-table-movement" *ngIf="tableTypeInPlay">&nbsp;</td>
                 <td class="league-table-teamName">Team</td>
-                <td class="league-table-played">Played</td>
+                <th class="league-table-played">Played</th>
                 <td class="league-table-won">{{ tableTypeFull || tableTypeInPlay ? "W" : "Won" }}</td>
                 <td class="league-table-drawn">{{ tableTypeFull || tableTypeInPlay ? "D" : "Drawn" }}</td>
                 <td class="league-table-lost">{{ tableTypeFull || tableTypeInPlay ? "L" : "Lost" }}</td>
@@ -47,18 +47,13 @@
             <ng-container *ngFor="let team of table; let i = index;">
                 <tr class="league-table-row">
                     <td class="league-table-position">{{ i + 1 }}</td>
-                    <td class="league-table-movement" aria-hidden="true"
-                        [class.fa]="tableTypeInPlay && hasSeasonStarted && (i < getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName) || i > getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName))"
-                        [class.fa-arrow-up]="tableTypeInPlay && hasSeasonStarted && i < getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName)"
-                        [class.fa-arrow-down]="tableTypeInPlay && hasSeasonStarted && i > getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName)"
-                        >
+
+                    <td class="league-table-movement" *ngIf="tableTypeInPlay">
+                        <mat-icon md-18 *ngIf="tableTypeInPlay && hasSeasonStarted && i < getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName)"
+                            class="arrow-up">arrow_upward</mat-icon>
+                        <mat-icon md-18 *ngIf="tableTypeInPlay && hasSeasonStarted && i > getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName)"
+                            class="arrow-down">arrow_downward</mat-icon>
                     </td>
-                    <!-- <td class="league-table-movement" aria-hidden="true" [ngClass]="{
-                        fa: tableTypeInPlay && hasSeasonStarted && (i < getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName) || i > getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName)),
-                        'fa-arrow-up': tableTypeInPlay && hasSeasonStarted && i < getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName),
-                        'fa-arrow-down': tableTypeInPlay && hasSeasonStarted && i > getPositionInArrayOfObjectsThis(tableBeforeFixtures, 'teamName', team.teamName)
-                        }">
-                </td> -->
 
                     <!-- <td class="league-table-teamName"><a class="teamNameLink" routerLink="/teamstats/{{ team.teamName }}" (mouseover)="hover=true" (mouseleave)="hover=false"><span [ngStyle]="{'text-decoration': (hover) ? 'underline' : 'none'}">{{ team.teamName }}</span></a></td> -->
                     <td class="league-table-teamName"><a class="teamNameLink" routerLink="/teamstats/{{ team.teamName }}" (mouseover)="hover=true" (mouseleave)="hover=false"><span>{{ team.teamName }}</span></a></td>

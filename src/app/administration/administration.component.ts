@@ -1,8 +1,9 @@
-import { DataService } from './../zzz-other/services/data.service';
-import { Team } from '../zzz-other/classes/team';
-import { SetOfFixtures } from '../zzz-other/classes/set-of-fixtures';
-import { SetOfFixturesModel, FixturesDatesModel } from '../zzz-other/interfaces/interfaces';
-import * as helpers from '../zzz-other/helper-functions/helpers';
+import { AuthService } from './../utilities/services/auth.service';
+import { DataService } from './../utilities/services/data.service';
+import { Team } from '../utilities/classes/team';
+import { SetOfFixtures } from '../utilities/classes/set-of-fixtures';
+import { SetOfFixturesModel, FixturesDatesModel } from '../utilities/interfaces/interfaces';
+import * as helpers from '../utilities/helper-functions/helpers';
 import { Component, OnInit } from '@angular/core';
 
 const NUMBER_OF_ATTEMPTS_TO_GET_SET_OF_TEAMS = 100000;
@@ -20,16 +21,21 @@ export class AdministrationComponent implements OnInit {
     private teams: any[] = [];                      // This references the class team in classes/team.ts and not the TeamModel in interfaces
     private setOfFixtures: SetOfFixturesModel;
 
-    constructor(public dataService: DataService) { }
+    constructor(public dataService: DataService,
+                private auth: AuthService) { }
 
     ngOnInit() {
         this.appDataMiscInfo = this.dataService.appData.miscInfo;
         this.appDataTeams = this.dataService.appData.teamsForSeason;
     }
 
+    authenticated() {
+        return this.auth.authenticated;
+    }
+
     createFixturesForSeason(): void {
-        if (this.dataService.haveSeasonsFixturesBeenCreated()) {
-            this.dataService.confirmResetSeason("Are you sure you want to reset the season ?", this.createFixtures.bind(this));
+        if (this.dataService.appData.miscInfo.haveSeasonsFixturesBeenCreated) {
+            this.dataService.confirmResetSeason("Are you sure you want to reset the season ?", false, this.createFixtures.bind(this));
         } else {
             this.createFixtures();
         }
@@ -52,7 +58,7 @@ export class AdministrationComponent implements OnInit {
 
         // Populate the datesOfFixturesForSeason array, an element for every set of fixtures in the season
         for (i = 0; i < numberOfFixturesForSeason; i++) {
-            datesOfFixturesForSeason.push({ 'date': dateOfSetOfFixtures = this.getFixturesDate(dateOfSetOfFixtures), 'numberOfMatches': numberOfFixturesForSeason.toString() });
+            datesOfFixturesForSeason.push({ 'date': dateOfSetOfFixtures = this.getFixturesDate(dateOfSetOfFixtures), 'numberOfFixtures': numberOfFixturesForSeason.toString() });
         }
 
         // Populate the teams array, an element for each team, containing properties and numerous methods
@@ -94,7 +100,8 @@ export class AdministrationComponent implements OnInit {
         }
 
         //Update the All Fixtures array in the data service and save
-        this.dataService.appData.allFixtures = fixturesForSeason;
+        this.dataService.appData.miscInfo.haveSeasonsFixturesBeenCreated = true;
+        this.dataService.appData.setsOfFixtures = fixturesForSeason;
         this.dataService.saveAppData();
 
         console.log('');
@@ -108,14 +115,15 @@ export class AdministrationComponent implements OnInit {
         //Now update the arrays used to check numbers of home/away games and also the dates of these games
         let homeTeam: string = "";
         let awayTeam: string = "";
-        let homeTeamIndex: number = 0;
-        let awayTeamIndex: number = 0;
-        let nFixture: number = 0;
+        let homeTeamIndex: number;
+        let awayTeamIndex: number;
 
-        for (nFixture = 0; nFixture < this.setOfFixtures.fixtures.length; nFixture++) {
+        homeTeamIndex = 0;
+        awayTeamIndex = 0;
 
-            homeTeam = this.setOfFixtures.fixtures[nFixture].homeTeam;
-            awayTeam = this.setOfFixtures.fixtures[nFixture].awayTeam;
+        this.setOfFixtures.fixtures.forEach(fixture => {
+            homeTeam = fixture.homeTeam;
+            awayTeam = fixture.awayTeam;
 
             homeTeamIndex = helpers.getPositionInArrayOfObjects(this.teams, "teamName", homeTeam);
             awayTeamIndex = helpers.getPositionInArrayOfObjects(this.teams, "teamName", awayTeam);
@@ -126,7 +134,7 @@ export class AdministrationComponent implements OnInit {
             this.teams[awayTeamIndex].updateCheckArraysForAwayTeam(this.teams[homeTeamIndex].teamName, this.setOfFixtures.dateOfSetOfFixtures);
 
             console.log(homeTeam + ' v ' + awayTeam);
-        }
+        });
     }
 
     private getFixturesDate(date: string): string {

@@ -1,37 +1,71 @@
 <div class="outer-container">
   
-  <header>
-    <div class="main-header">Sport{{ showAppVersionOnTitle }}</div>
-  </header>
+    <nav>
+        <div class="main-heading">
+            <div class="title-nav">My Sports{{ showAppVersionOnTitle }}</div>
+            <div class="login-section">
+                <div class="login-buttons">
+                    <button *ngIf="!authenticated()" mat-button mat-raised-button color="accent" routerLink="/signin/email">Log in</button>
+                    <button *ngIf="!authenticated()" mat-button mat-raised-button color="primary" routerLink="/signin/email">Register</button>
+                    <button *ngIf="authenticated()" mat-button mat-raised-button color="primary" (click)="logout()">Logout</button>
+                </div>
+                <div *ngIf="authenticated()" class="loggedInAs">Logged in as {{ getUser() }}</div>
+            </div>
+        </div>
 
-  <nav id="sport">
-    <div class="main-header">
-        <ul>
-        <li>Football<a href="#"></a></li>
-        <li>Cricket<a href="#"></a></li>
-        <li>Golf<a href="#"></a></li>
-        </ul>
+        <div class="sport">
+            <div class="main-nav">
+                <ul>
+                    <li class="active-sport-link">Premier League Football<a href="#"></a></li>
+                    <li class="link-disabled">Cricket<a href="#"></a></li>
+                    <li class="link-disabled">Golf<a href="#"></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="individual-sport" id="football">
+            <div class="main-nav">
+                <ul>
+                    <li><a routerLink="/fixtures-latest" routerLinkActive="active-link nav-link">Latest Fixtures</a></li>
+                    <li><a routerLink="/fixtures" routerLinkActive="active-link nav-link" [routerLinkActiveOptions]="{exact: true}">Remaining Fixtures</a></li>
+                    <li><a routerLink="/fixtures/results" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Results</a></li>
+                    <li><a routerLink="/tables" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Table</a></li>
+                    <li><a routerLink="/tables/full" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Table (Full)</a></li>
+                    <li><a routerLink="/administration" routerLinkActive="active-link">Administration</a></li>
+                    <!-- <li><a routerLink="/fixtures" routerLinkActive="active-link">Default (Fix)</a></li> -->
+                    <!-- <li><a routerLink="/fixtures/results" routerLinkActive="active-link">Subscriber (Res)</a></li> -->
+                    <!-- <li><a routerLink="/tables" routerLinkActive="active-link">Admin (Tab)</a></li> -->
+                    <!-- <li class="nav-child"><a class="dropbtn" routerLink="/signin" routerLinkActive="active-link">Sign in</a>
+                        <div class="nav-child-content">
+                            <a routerLink="/signin/email">Sign in using email</a>
+                            <a routerLink="/signin/gmail">Sign in using Gmail</a>
+                            <a routerLink="/signin/register">Register</a>
+                        </div>
+                    </li> -->
+                    <!-- <li><a routerLink="/signin/email">Sign out</a></li> -->
+                    <!-- <li><a routerLink="/teamstats">Team Stats</a></li> -->
+                </ul>
+            </div>
+        </div>
+    </nav> 
+
+    <div class="router-outlet">
+        <router-outlet></router-outlet>
     </div>
-  </nav>
-
-  <nav class="individual-sport" id="football">
-      <div class="main-header">
-          <ul>
-          <li><a routerLink="/fixtures">Remaining Fixtures</a></li>
-          <li><a routerLink="/fixtures-latest">Latest Fixtures</a></li>
-          <li><a routerLink="/fixtures/results">Results</a></li>
-          <li><a routerLink="/tables">Table</a></li>
-          <li><a routerLink="/tables/full">Table (Full)</a></li>       
-          <li><a routerLink="/administration">Administration</a></li>
-          <!-- <li><a routerLink="/teamstats">Team Stats</a></li> -->
-          </ul>
-      </div>
-  </nav> 
-
-  <router-outlet></router-outlet>
     
-  <footer>
-    &copy; Martin Anderson 2017
-  </footer>
+    <footer>
+        <div class="links">
+            <div><a routerLink="/help" routerLinkActive="active-link">Help</a></div>
+            <div><a routerLink="/contact" routerLinkActive="active-link">Contact</a></div>
+            <div><a routerLink="/about" routerLinkActive="active-link">About this application</a></div>
+        </div>
+        &copy; Martin Anderson 2017
+    </footer>
 
 </div>
+
+    <!-- <button *ngIf="this.auth.authenticated" (click)="logout()" class="button logout">Log out</button>
+    <div class="loginNav">
+        <button routerLink="/login" class="button {{ this.auth.authenticated ? 'loggedIn' : 'login' }}">{{ this.auth.authenticated ? "Logged in details" : "Log in" }}</button>
+        <span>{{ this.auth.currentUserDisplayName }}</span>
+    </div> -->

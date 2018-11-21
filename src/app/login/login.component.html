@@ -1,0 +1,62 @@
+<div class="container-main-content">
+
+    <div class="container-card">
+
+        <form [formGroup]="userForm" (ngSubmit)="emailLogin()">
+
+            <h2>Log in</h2>
+
+            <mat-form-field class="form-control">
+                <!-- <input matInput placeholder="Enter your email address" [(ngModel)]="emailAddress" name="emailAddress"> -->
+                <input type="email" matInput placeholder="Enter your email address" formControlName="email" required>
+            </mat-form-field>
+
+            <!-- <label for="email">Email:</label> -->
+            <!-- <input type="email" formControlName="email" required> -->
+
+            <div *ngIf="formErrors.email" class="form-error">
+                {{ formErrors.email }}
+            </div>
+
+            <br />
+            <br />
+
+            <mat-form-field class="form-control">
+                <input type="password" matInput placeholder="Enter your password" formControlName="password" required>
+            </mat-form-field>
+
+            <!-- <input type="password" formControlName="password" required> -->
+
+            <div *ngIf="formErrors.password" class="form-error">
+                {{ formErrors.password }}
+            </div>
+
+            <!-- <mat-checkbox class="remember" [(ngModel)]="rememberUsername" name="rememberUsername">Remember my username</mat-checkbox> -->
+
+            <br />
+            <br />
+            <br />
+            <br />
+
+            <div class="submit-button">
+                <button type="submit" mat-button mat-raised-button color="accent" [disabled]="!userForm.valid">Log in</button>
+                <!-- <button type="submit" [disabled]="!userForm.valid">Log in</button> -->
+                <!-- <button (click)="logIn()">Log In</button> -->
+                <!-- <button (click)="logOut()">Log Out</button> -->
+            </div>
+
+            <br />
+            <br />
+
+            <p *ngIf="authenticated()">Logged in as {{ getUser() }}</p>
+
+            <!-- <p *ngIf="!passReset" (click)="resetPassword()">Reset Password for {{userForm.value.email}}</p>
+            <p *ngIf="passReset">Reset requested. Check your email instructions.</p>
+            <br>
+            <p (click)="toggleForm()">Already Registered?</p> -->
+
+        </form>
+
+    </div>
+
+</div>

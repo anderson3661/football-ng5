@@ -1,55 +1,58 @@
-<div id="main-grid-latest-fixtures">
+<div class="container-main-content-latest-fixtures">
 
     <h1>{{ displayHeader }}</h1>
 
-    <div id="split-grid" *ngIf="fixturesForSeason.length !== undefined && ! hasSeasonFinished">
+    <!-- <div class="split-grid" *ngIf="allSeasonsFixtures.length !== undefined && ! hasSeasonFinished"> -->
+    <div class="split-grid" *ngIf="!hasSeasonFinished">
 
-        <div id="fixtures-latest">
+        <div>
 
-            <button class="btn btn-primary" id="startSetOfFixtures" (click)="startSetOfFixtures()" [disabled]="!setOfFixturesController.startFixturesButtonEnabled">{{ setOfFixturesController.startFixturesButtonText }}</button>
+            <button mat-button mat-raised-button color="primary" id="startSetOfFixtures" (click)="startSetOfFixtures()" [disabled]="!authenticated() || !startFixturesButtonEnabled">{{ startFixturesButtonText }}</button>
 
-            <div id="numberOfMinutes">&nbsp;{{ setOfFixturesController.minutesInfo }}</div>
+            <!-- <div class="numberOfMinutes">&nbsp;{{ setOfFixturesController.minutesInfo }}</div> -->
 
-            <table id="main-header-fixtures">
-                <tr>
-                    <td>{{ formattedDateOfFixtures }}</td>
-                </tr>
-            </table>
+            <div class="fixtures-date">{{ formattedDateOfFixtures }}</div>
 
-            <table class="fixtures latest">
+            <div class="fixtures in-play">
                 <ng-template ngFor let-fixture [ngForOf]="latestFixtures.fixtures" let-i="index">
-                    <tr class="fixtures-row-latest">
 
-                        <td id="homeTeamsName{{i}}"
-                            [class.faIconTop3]="setOfFixturesController.teamIn1stPlaceInTable === fixture.homeTeam || setOfFixturesController.teamIn2ndPlaceInTable === fixture.homeTeam || setOfFixturesController.teamIn3rdPlaceInTable === fixture.homeTeam"
+                    <fixture-row [source]="'In Play'" [fixture]="fixture" [fixturesInPlay]="fixturesInPlay" [top3TeamsBeforeFixtures]="top3TeamsBeforeFixtures"></fixture-row>
+
+                    <!-- <div class="fixtures-row"> -->
+
+                    <!-- <td class="homeTeamsName" [class.faIconTop3]="setOfFixturesController.teamIn1stPlaceInTable === fixture.homeTeam || setOfFixturesController.teamIn2ndPlaceInTable === fixture.homeTeam || setOfFixturesController.teamIn3rdPlaceInTable === fixture.homeTeam"
                             [class.faIconTop3BeforeText]="setOfFixturesController.teamIn1stPlaceInTable === fixture.homeTeam  || setOfFixturesController.teamIn2ndPlaceInTable === fixture.homeTeam || setOfFixturesController.teamIn3rdPlaceInTable === fixture.homeTeam"
-                            [class.faIconTop3Home1st]="setOfFixturesController.teamIn1stPlaceInTable === fixture.homeTeam"
-                            [class.faIconTop3Home2nd]="setOfFixturesController.teamIn2ndPlaceInTable === fixture.homeTeam"
-                            [class.faIconTop3Home3rd]="setOfFixturesController.teamIn3rdPlaceInTable === fixture.homeTeam"
-                            >{{ fixture.homeTeam }}
-                        </td>
+                            [class.faIconTop3Home1st]="setOfFixturesController.teamIn1stPlaceInTable === fixture.homeTeam" [class.faIconTop3Home2nd]="setOfFixturesController.teamIn2ndPlaceInTable === fixture.homeTeam"
+                            [class.faIconTop3Home3rd]="setOfFixturesController.teamIn3rdPlaceInTable === fixture.homeTeam">{{ fixture.homeTeam }}
+                        </td> -->
 
-                        <td id="homeTeamsScore{{i}}">
-                            <span
-                                [class.activeScore]="setOfFixturesController.fixturesInPlay"
-                                [class.halfTimeScore]="setOfFixturesController.minutesInfo === 'Half-Time'"
-                                [class.finalScore]="setOfFixturesController.minutesInfo === 'Full-Time'">
-                                {{ fixture.homeTeamsScore }}
-                            </span>
-                        </td>
+                    <!-- <div class="homeTeamsName">
+                            <mat-icon md-24 class="icon-position">
+                                {{ teamIn1stBeforeFixtures === fixture.homeTeam ? "looks_one" : teamIn2ndBeforeFixtures === fixture.homeTeam ? "looks_two" :
+                                teamIn3rdBeforeFixtures === fixture.homeTeam ? "looks_3" : ""}}
+                            </mat-icon>
+                            <span class="teamName">{{ fixture.homeTeam }}</span>
+                        </div>
 
-                        <td class="versus">{{ setOfFixturesController.versusBetweenTeams }}</td>
+                        <div class="timeOrScore" [class.timeOnly]="!fixturesInPlay" [class.scoresOnly]="fixturesInPlay">
 
-                        <td id="awayTeamsScore{{i}}">
-                            <span
-                                [class.activeScore]="setOfFixturesController.fixturesInPlay"
-                                [class.halfTimeScore]="setOfFixturesController.minutesInfo === 'Half-Time'"
-                                [class.finalScore]="setOfFixturesController.minutesInfo === 'Full-Time'">
-                                {{ fixture.awayTeamsScore }}
-                            </span>
-                        </td>
+                            <ng-container *ngIf="!fixturesInPlay">
+                                <span class="timeOfFixture">15:00</span>
+                            </ng-container>
 
-                        <!-- <td id="awayTeamsScore{{i}}"><span [ngClass]="{
+                            <ng-container *ngIf="fixturesInPlay">
+                                <span class="homeTeamsScore" [class.activeScore]="fixturesInPlay && !haveAllFixturesInThisSetFinished" [class.halfTimeScore]="fixture.minutesInfo === 'Half-Time'"
+                                    [class.finalScore]="fixture.minutesInfo === 'Full-Time'">
+                                    {{ fixture.homeTeamsScore }}
+                                </span>
+                                <span class="awayTeamsScore" [class.activeScore]="fixturesInPlay && !haveAllFixturesInThisSetFinished" [class.halfTimeScore]="fixture.minutesInfo === 'Half-Time'"
+                                    [class.finalScore]="fixture.minutesInfo === 'Full-Time'">
+                                    {{ fixture.awayTeamsScore }}
+                                </span>
+                            </ng-container>
+                        </div> -->
+
+                    <!-- <td id="awayTeamsScore{{i}}"><span [ngClass]="{
                                 activeScore: setOfFixturesController.fixturesInPlay,
                                 halfTimeScore: setOfFixturesController.minutesInfo === 'Half-Time',
                                 finalScore: setOfFixturesController.minutesInfo === 'Full-Time'
@@ -57,30 +60,27 @@
                             </span>
                         </td> -->
 
-                        <td id="awayTeamsName{{i}}"
-                            [class.faIconTop3]="setOfFixturesController.teamIn1stPlaceInTable === fixture.awayTeam || setOfFixturesController.teamIn2ndPlaceInTable === fixture.awayTeam || setOfFixturesController.teamIn3rdPlaceInTable === fixture.awayTeam"
-                            [class.faIconTop3AfterText]="setOfFixturesController.teamIn1stPlaceInTable === fixture.awayTeam  || setOfFixturesController.teamIn2ndPlaceInTable === fixture.awayTeam || setOfFixturesController.teamIn3rdPlaceInTable === fixture.awayTeam"
-                            [class.faIconTop3Away1st]="setOfFixturesController.teamIn1stPlaceInTable === fixture.awayTeam"
-                            [class.faIconTop3Away2nd]="setOfFixturesController.teamIn2ndPlaceInTable === fixture.awayTeam"
-                            [class.faIconTop3Away3rd]="setOfFixturesController.teamIn3rdPlaceInTable === fixture.awayTeam"
-                            >{{ fixture.awayTeam }}
-                        </td>
+                    <!-- <div class="awayTeamsName">
+                            <span class="teamName">{{ fixture.awayTeam }}</span>
+                            <mat-icon md-24 class="icon-position">
+                                {{ teamIn1stBeforeFixtures === fixture.awayTeam ? "looks_one" : teamIn2ndBeforeFixtures === fixture.awayTeam ? "looks_two" :
+                                teamIn3rdBeforeFixtures === fixture.awayTeam ? "looks_3" : ""}}
+                            </mat-icon>
+                        </div>
 
-                    </tr>
+                    </div>
 
-                    <tr class="fixtures-row-scores">
-                        <td id="homeTeamsGoals{{i}}">{{ fixture.homeTeamsGoals }}</td>
-                        <td>&nbsp;</td>
-                        <td></td>
-                        <td></td>
-                        <td id="awayTeamsGoals{{i}}">{{ fixture.awayTeamsGoals }}</td>
-                    </tr>
+                    <div class="fixtures-row-goal-times">
+                        <div class="teamsGoalTimes home">{{ '&nbsp;' }}{{ fixture.homeTeamsGoals }}</div>
+                        <div class="minutesPlayed">{{ (fixture.minutesPlayed === 0) ? '&nbsp;' : fixture.minutesInfo }}</div>
+                        <div class="teamsGoalTimes away">{{ '&nbsp;' }}{{ '&nbsp;' }}{{ fixture.awayTeamsGoals }}</div>
+                    </div> -->
+
                 </ng-template>
-            </table>
+            </div>
 
         </div>
 
-        <!-- Call app-table from tables.component.html -->
         <app-tables [tableTypeInPlay]=true [tableInPlay]=tableInPlay [tableBeforeFixtures]=tableBeforeFixtures></app-tables>
 
     </div>

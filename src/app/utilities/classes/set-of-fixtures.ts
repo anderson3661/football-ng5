@@ -63,7 +63,7 @@ export class SetOfFixtures {
             if (this.remainingTeams.length === 0 && this.teamsSelected.length === this.numberOfTeams) {
                 numberOfMatches = this.numberOfTeams / 2;
                 for (i = 0; i < this.teamsSelected.length / 2; i++) {
-                    setOfFixtures.push({ 'homeTeam': this.teamsSelected[i], 'awayTeam': this.teamsSelected[i + numberOfMatches], hasFixtureBeenPlayed: false })
+                    setOfFixtures.push({ 'homeTeam': this.teamsSelected[i], 'awayTeam': this.teamsSelected[i + numberOfMatches], hasFixtureFinished: false })
                 }
                 return setOfFixtures;
             }

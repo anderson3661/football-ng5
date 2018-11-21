@@ -1,81 +1,116 @@
-#admin-teams {
+@import '~sass/variables';
+
+.container-main-content {
+    max-width: 80%;
+    margin-top: 125px;
+    
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+}
+
+mat-radio-button {
+    margin: 0px 15px;
+}
+
+header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    // line-height: 0;
+}
+
+.container-admin {
+    display: flex;
+    > div { width: 45%; }
+}
+
+.container-admin-factors {
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 0 50px;
+    
+    > div { margin-bottom: 20px; }
+}
+
+.container-card {
+    font-family: $font-family-main;
+    font-size: 0.9rem;
+    color: black;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    margin: 0 auto;
+    padding: 5px 20px 15px 20px;
+
+    h2 { text-align: center; }
+}
+
+table.admin-teams {
     font-size: 14px;   
     width: 100%;
-    margin: 0 0 20px 0;
     border-collapse: collapse;
+    margin-bottom: 10px;
+    
+    .admin-team-number { width: 15%; text-align: center }
+    .admin-team-team { width: 50%; text-align: left}
+    .admin-team-top-team { width: 15%; text-align: center}
+
+    .teams-header { background-color: $background-color-admin-teams-header; }
+    .teams-header th { padding: 5px; }
+
+    .team-row input { width: 100%; }   
+
+    td {
+        border-bottom: 1px solid lightgray;
+        padding: 5px;
+    }
+
+    input { color: #495057; }
+    
+    tbody tr:odd { background-color: gray; }
 }
 
-#admin-teams #teams-header {
-    background-color: lightgray;
+.form-control {
+    width: 40%;
+    margin-right: 50px;
+    margin-top: 25px;
 }
 
-#admin-teams tbody tr:odd {
-    background-color: gray;
+.form-control-long {
+    width: 100%;
+    margin-top: 25px;
 }
 
-#admin-teams td {
-    /* color: #495057; */
-    border-bottom: 1px solid lightgray;
-    padding: 5px;
+mat-form-field {
+    font-size: 16px;
 }
 
-#admin-teams input {
-    color: #495057;
-}    
 
-#admin-teams-number {
-    width: 10%;
+@media all and (min-width: 1280px) {
+
+    .container-admin-teams { max-width: 45%; }
 }
 
-#admin-teams-team {
-    width: 55%;
+@media all and (max-width: 1280px) {
+
+    .container-admin > div { margin: 0 auto; }
+
 }
 
-#admin-teams-top-team {
-    width: 35%;
-    /* width: 150px; */
-}
+@media all and (max-width: 414px) {
 
-#div-admin {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 100px;
-}
+    .container-admin {
+        display: initial;
+    
+        > div {
+            width: 95%;
+            margin: 0 auto;
+        }
+    }
 
-#div-admin-teams {
-    grid-column: 1;
-    min-width: 50%;
-}
+    .container-admin-teams { width: 100%; }
 
-#div-admin-factors {
-    grid-column: 2;
-    /* min-width: 50%; */
-}
-
-.card-header {
-    padding: 5px 0;
-}
-
-.card-body {
-    padding-top: 10px;
-    padding-bottom: 0;
-}
-
-.form-group {
-    padding-right: 0;
-    margin-right: 0;
-    /* border: 1px solid red; */
-}
-
-.col-form-label {
-    padding-right: 0;
-}
-
-/* .form-control { */
-    /* width: 200px; */
-/* } */
-
-.form-control-sm {
-    padding: 0;
-    padding-left: 5px;
 }

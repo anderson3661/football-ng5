@@ -1,0 +1,66 @@
+<div class="fixtures-row" [class.team-stats]="showForTeamStats" [class.in-play]="showForInPlay" [class.show-goals-hide-border-bottom]="showGoals && fixture.hasFixtureFinished">
+
+    <div *ngIf="showForTeamStats" class="fixtureDate">{{ fixture.dateOfFixture }}</div>
+
+    <!-- <div class="homeTeamsName">{{ fixture.homeTeam }}</div> -->
+    <div class="homeTeamsName">
+        <mat-icon md-24 *ngIf="showForInPlay" class="icon-position">
+            {{ top3TeamsBeforeFixtures[0] === fixture.homeTeam ? "looks_one" : top3TeamsBeforeFixtures[1] === fixture.homeTeam ? "looks_two"
+            : top3TeamsBeforeFixtures[2] === fixture.homeTeam ? "looks_3" : ""}}
+        </mat-icon>
+        <span class="teamName">{{ fixture.homeTeam }}</span>
+    </div>
+
+
+    <div class="timeOrScore" [class.timeOnly]="(showForInPlay && !fixturesInPlay) || (!showForInPlay && !fixture.hasFixtureFinished)"
+        [class.scoresOnly]="(showForInPlay && fixturesInPlay) || (!showForInPlay && fixture.hasFixtureFinished)">
+
+        <!-- <span *ngIf="!fixture.hasFixtureFinished" class="timeOfFixture">15:00</span> -->
+        <ng-container *ngIf="(showForInPlay && !fixturesInPlay) || (!showForInPlay && !fixture.hasFixtureFinished)">
+            <span class="timeOfFixture">15:00</span>
+        </ng-container>
+
+        <ng-container *ngIf="!showForInPlay">
+            <span *ngIf="fixture.hasFixtureFinished" [class.finalScore]="fixture.hasFixtureFinished">{{ fixture.homeTeamsScore }}</span>
+            <span *ngIf="fixture.hasFixtureFinished" [class.finalScore]="fixture.hasFixtureFinished">{{ fixture.awayTeamsScore }}</span>
+        </ng-container>
+
+        <ng-container *ngIf="showForInPlay && fixturesInPlay">
+            <span class="homeTeamsScore" [class.activeScore]="fixturesInPlay && !fixture.hasFixtureFinished" [class.halfTimeScore]="fixture.minutesInfo === 'Half-Time'"
+                [class.finalScore]="fixture.hasFixtureFinished">
+                {{ fixture.homeTeamsScore }}
+            </span>
+            <span class="awayTeamsScore" [class.activeScore]="fixturesInPlay && !fixture.hasFixtureFinished" [class.halfTimeScore]="fixture.minutesInfo === 'Half-Time'"
+                [class.finalScore]="fixture.hasFixtureFinished">
+                {{ fixture.awayTeamsScore }}
+            </span>
+        </ng-container>
+
+
+    </div>
+
+    <!-- <div class="awayTeamsName">{{ fixture.awayTeam }}</div> -->
+    <div class="awayTeamsName">
+        <span class="teamName">{{ fixture.awayTeam }}</span>
+        <mat-icon md-24 *ngIf="showForInPlay" class="icon-position">
+            {{ top3TeamsBeforeFixtures[0] === fixture.awayTeam ? "looks_one" : top3TeamsBeforeFixtures[1] === fixture.awayTeam ? "looks_two"
+            : top3TeamsBeforeFixtures[2] === fixture.awayTeam ? "looks_3" : ""}}
+        </mat-icon>
+    </div>
+
+
+    <div *ngIf="showForTeamStats" class="winDrawLoss">
+        <span class="result {{ winDrawLoss }}">{{ fixture.hasFixtureFinished ? winDrawLoss : '' }}</span>
+    </div>
+
+</div>
+
+<ng-container *ngIf="showForInPlay || (showGoals && fixture.hasFixtureFinished)">
+    <div class="fixtures-row-goal-times" [class.team-stats]="showForTeamStats">
+        <div *ngIf="showForTeamStats" class="fixtureDate">{{ '&nbsp;' }}</div>
+        <div class="teamsGoalTimes home">{{ '&nbsp;' }}{{ fixture.homeTeamsGoals }}</div>
+        <div class="minutesPlayed">{{ (fixture.minutesPlayed === 0) ? '&nbsp;' : fixture.minutesInfo }}</div>
+        <div class="teamsGoalTimes away">{{ '&nbsp;' }}{{ '&nbsp;' }}{{ fixture.awayTeamsGoals }}</div>
+        <div *ngIf="showForTeamStats" class="winDrawLoss">{{ '&nbsp;' }}</div>
+    </div>
+</ng-container>

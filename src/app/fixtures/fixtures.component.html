@@ -1,30 +1,27 @@
-<div id="main-grid">
+<div class="container-main-content">
 
-  <h1>{{ displayHeader }}</h1>
-  <ng-container *ngIf="fixturesForSeason.length !== undefined && fixturesToOutput[0].dateOfSetOfFixtures !== ''">
-    <div *ngFor="let fixtureSet of fixturesToOutput; let fixtureSetIndex = index">
-      <table id="main-header-fixtures">
-        <tr>
-          <td>{{ fixtureSet.dateOfSetOfFixtures }}</td>
-        </tr>
-      </table>
-
-      <table class="fixtures{{ displayResults ? ' results' : '' }}">
-        <tr class="fixtures-row" *ngFor="let fixture of fixturesToOutput[fixtureSetIndex].fixtures; let i = index">
-          <td id="homeTeamsName{{i}}">{{ fixture.homeTeam }}</td>
-          <td id="homeTeamsScore{{i}}">
-            <span [ngClass]="{ finalScore: displayResults }">{{ displayResults ? fixture.homeTeamsScore : '' }}</span>
-          </td>
-          <td class="versus">{{ displayResults ? '' : 'v' }}</td>
-          <td id="awayTeamsScore{{i}}">
-            <span [ngClass]="{ finalScore: displayResults }">{{ displayResults ? fixture.awayTeamsScore : '' }}</span>
-          </td>
-          <td id="awayTeamsName{{i}}">{{ fixture.awayTeam }}</td>
-        </tr>
-      </table>
+    <div class="main-header">
+        <h1>{{ displayHeader }}</h1>
+        <div *ngIf="displayResults && hasSeasonStarted" class="showGoals">
+            <mat-checkbox [(ngModel)]="showGoals">Show Goals</mat-checkbox>
+        </div>
     </div>
-  </ng-container>
 
+    <ng-container *ngIf="fixturesForSeason.length !== undefined && fixturesToOutput[0].dateOfSetOfFixtures !== ''">
+
+        <div *ngFor="let setOfFixtures of fixturesToOutput; let setOfFixturesIndex = index">
+
+            <div class="fixtures-date">{{ setOfFixtures.dateOfSetOfFixtures }}</div>
+
+            <div class="fixtures{{ displayResults ? ' results' : '' }}">
+                <ng-container *ngFor="let fixture of fixturesToOutput[setOfFixturesIndex].fixtures; let i = index">
+
+                    <fixture-row [source]="displayResults ? 'Results' : 'To Be Played'" [fixture]="fixture" [showGoals]='showGoals'></fixture-row>
+
+                </ng-container>
+            </div>
+
+        </div>
+
+    </ng-container>
 </div>
-
-<!-- <script src="../zzz-other/helper-functions/helpers.ts"></script> -->

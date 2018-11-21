@@ -1,6 +1,6 @@
-import { DataService } from './../zzz-other/services/data.service';
-import { AllFixturesModel, SetOfFixturesModel, TeamStatsModel, TablesModel, TableModel } from './../zzz-other/interfaces/interfaces';
-import * as helpers from '../zzz-other/helper-functions/helpers';
+import { DataService } from './../utilities/services/data.service';
+import { AllFixturesModel, SetOfFixturesModel, TeamStatsModel, TablesModel, TableModel } from './../utilities/interfaces/interfaces';
+import * as helpers from '../utilities/helper-functions/helpers';
 import { Component, OnInit, ViewEncapsulation, Input, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import * as Chart from 'chart.js'
@@ -11,7 +11,7 @@ const HOME_TEAM = 0;
     selector: 'app-team-stats',
     templateUrl: './team-stats.component.html',
     styleUrls: [
-        './../zzz-other/css/fixtures.scss',
+        './../utilities/css/fixtures.scss',
         './team-stats.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
@@ -22,6 +22,7 @@ export class TeamStatsComponent implements OnInit, AfterViewInit {
     private table: TablesModel;
     private urlParam: string;
     public teamName: string;
+    public showGoals: boolean;
 
     public chartType;
     public chartOptions;
@@ -47,67 +48,69 @@ export class TeamStatsComponent implements OnInit, AfterViewInit {
         let awayTeamsGoals: string;
         let winDrawLoss: string;
         let positionInTable: number;
-        let hasFixtureBeenPlayed: boolean;
+        let hasFixtureFinished: boolean;
         let checkHomeTeamsScore: any;
         let setOfFixtures: SetOfFixturesModel;
 
         this.urlParam = this.route.snapshot.paramMap.get('teamName');
         this.teamName = this.urlParam;
 
-        this.fixturesForSeason = this.dataService.appData.allFixtures;
+        this.fixturesForSeason = this.dataService.appData.setsOfFixtures;
         this.fixturesToOutput = [];
         this.table = [];
 
+        this.showGoals = false;
+
         debugger;
 
-        for (setOfFixturesCounter = 0; setOfFixturesCounter < this.fixturesForSeason.length; setOfFixturesCounter++) {
-            for (fixtureCounter = 0; fixtureCounter < this.fixturesForSeason[setOfFixturesCounter].fixtures.length; fixtureCounter++) {
-                dateOfFixture = this.fixturesForSeason[setOfFixturesCounter].dateOfSetOfFixtures;
-                if (this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].homeTeam === this.teamName || this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].awayTeam === this.teamName) {
-                    homeTeam = this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].homeTeam;
-                    awayTeam = this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].awayTeam;
-                    homeTeamsScore = this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].homeTeamsScore;
-                    awayTeamsScore = this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].awayTeamsScore;
-                    homeTeamsGoals = this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].homeTeamsGoals;
-                    awayTeamsGoals = this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].awayTeamsGoals;
+        this.fixturesForSeason.forEach((setOfFixtures, setOfFixturesCounter) => {
+            for (let fixture of setOfFixtures.fixtures) {
+                dateOfFixture = setOfFixtures.dateOfSetOfFixtures;
+                if (fixture.homeTeam === this.teamName || fixture.awayTeam === this.teamName) {
+                    homeTeam = fixture.homeTeam;
+                    awayTeam = fixture.awayTeam;
+                    homeTeamsScore = fixture.homeTeamsScore;
+                    awayTeamsScore = fixture.awayTeamsScore;
+                    homeTeamsGoals = fixture.homeTeamsGoals;
+                    awayTeamsGoals = fixture.awayTeamsGoals;
 
-                    winDrawLoss = (this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].homeTeam === this.teamName && homeTeamsScore > awayTeamsScore) ? "W" : "";
-                    winDrawLoss = (this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].homeTeam === this.teamName && homeTeamsScore === awayTeamsScore) ? "D" : winDrawLoss;
-                    winDrawLoss = (this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].homeTeam === this.teamName && homeTeamsScore < awayTeamsScore) ? "L" : winDrawLoss;
-                    winDrawLoss = (this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].awayTeam === this.teamName && awayTeamsScore > homeTeamsScore) ? "W" : winDrawLoss;
-                    winDrawLoss = (this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].awayTeam === this.teamName && awayTeamsScore === homeTeamsScore) ? "D" : winDrawLoss;
-                    winDrawLoss = (this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter].awayTeam === this.teamName && awayTeamsScore < homeTeamsScore) ? "L" : winDrawLoss;
+                    if (fixture.hasFixtureFinished) {
+                        winDrawLoss = (fixture.homeTeam === this.teamName && homeTeamsScore > awayTeamsScore) ? "W" : "";
+                        winDrawLoss = (fixture.homeTeam === this.teamName && homeTeamsScore === awayTeamsScore) ? "D" : winDrawLoss;
+                        winDrawLoss = (fixture.homeTeam === this.teamName && homeTeamsScore < awayTeamsScore) ? "L" : winDrawLoss;
+                        winDrawLoss = (fixture.awayTeam === this.teamName && awayTeamsScore > homeTeamsScore) ? "W" : winDrawLoss;
+                        winDrawLoss = (fixture.awayTeam === this.teamName && awayTeamsScore === homeTeamsScore) ? "D" : winDrawLoss;
+                        winDrawLoss = (fixture.awayTeam === this.teamName && awayTeamsScore < homeTeamsScore) ? "L" : winDrawLoss;
+                    } else {
+                        winDrawLoss = "";
+                    }
 
                     break;
-                }
-            }
+                };
+            };
             //Check if fixture has been played
             checkHomeTeamsScore = this.fixturesForSeason[setOfFixturesCounter].fixtures[0].homeTeamsScore;
             positionInTable = (checkHomeTeamsScore === undefined || checkHomeTeamsScore === "") ? 0 : this.getPositionInTable(setOfFixturesCounter);
-            hasFixtureBeenPlayed = this.fixturesForSeason[setOfFixturesCounter].fixtures[0].hasFixtureBeenPlayed;
+            hasFixtureFinished = this.fixturesForSeason[setOfFixturesCounter].fixtures[0].hasFixtureFinished;
 
-            this.fixturesToOutput.push({ dateOfFixture: dateOfFixture, homeTeam: homeTeam, awayTeam: awayTeam, homeTeamsScore: homeTeamsScore, awayTeamsScore: awayTeamsScore, homeTeamsGoals: homeTeamsGoals, awayTeamsGoals: awayTeamsGoals, winDrawLoss: winDrawLoss, positionInTable: positionInTable, hasFixtureBeenPlayed: hasFixtureBeenPlayed });
-        }
+            this.fixturesToOutput.push({ dateOfFixture: dateOfFixture, homeTeam: homeTeam, awayTeam: awayTeam, homeTeamsScore: homeTeamsScore, awayTeamsScore: awayTeamsScore, homeTeamsGoals: homeTeamsGoals, awayTeamsGoals: awayTeamsGoals, winDrawLoss: winDrawLoss, positionInTable: positionInTable, hasFixtureFinished: hasFixtureFinished });
+        });
 
         this.displayChart();
     }
 
     private getPositionInTable(setOfFixturesCounter): number {
-        let fixtureCounter: number;
         let homeOrAwayCounter: number;
         let homeTeam: string;
         let awayTeam: string;
         let homeTeamsScore: number;
         let awayTeamsScore: number;
         let teamIndex: number;
-        let fixture;
         let team: TableModel;
 
         if (setOfFixturesCounter === 0) this.dataService.createTable(this.table);
 
-        for (fixtureCounter = 0; fixtureCounter < this.fixturesForSeason[setOfFixturesCounter].fixtures.length; fixtureCounter++) {
-
-            fixture = this.fixturesForSeason[setOfFixturesCounter].fixtures[fixtureCounter];
+        this.fixturesForSeason[setOfFixturesCounter].fixtures.forEach(fixture => {
             homeTeam = fixture.homeTeam;
             awayTeam = fixture.awayTeam;
             homeTeamsScore = fixture.homeTeamsScore;
@@ -187,7 +190,7 @@ export class TeamStatsComponent implements OnInit, AfterViewInit {
                 }
 
             }
-        }
+        });
 
         this.table.sort(helpers.deepSortAlpha(['points', 'goalDifference', 'goalsFor', 'teamName']));
 

@@ -1,371 +1,361 @@
-import { DataService } from './../zzz-other/services/data.service';
-import { TeamsModel, AllFixturesModel, SetOfFixturesModel, TableModel, TablesModel, SetOfFixturesControllerModel, AppDataModel } from './../zzz-other/interfaces/interfaces';
-import { SetOfFixtures } from './../zzz-other/classes/set-of-fixtures';
-import * as helpers from '../zzz-other/helper-functions/helpers';
+import { AuthService } from './../utilities/services/auth.service';
+import { Fixture } from './../utilities/classes/fixture';
+import { DataService } from './../utilities/services/data.service';
+import { TeamsModel, AllFixturesModel, SetOfFixturesModel, SetOfLatestFixturesModel, FixtureModel, TableModel, TablesModel, AppDataModel } from './../utilities/interfaces/interfaces';
+// import { SetOfFixtures } from './../zzz-other/classes/set-of-fixtures';
+import * as helpers from '../utilities/helper-functions/helpers';
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
+import "rxjs/add/observable/interval";
+import "rxjs/add/operator/take";
 
 const SHOW_FORM_MATCHES = 10;
 const HOME_TEAM = 0;
 const EXTRA_MINUTES_FIRST_HALF = 5;
 const EXTRA_MINUTES_SECOND_HALF = 9;
 
+const START_FIXTURES = "Start Fixtures";
+const RESTART_FIXTURES = "Restart Fixtures";
+const FIXTURES_FINISHED = "Fixtures Finished";
+
 
 @Component({
     selector: 'app-fixtures-latest',
     templateUrl: './fixtures-latest.component.html',
     styleUrls: [
-        '../../../node_modules/font-awesome/css/font-awesome.min.css',
-        './../zzz-other/css/fixtures.scss',
-        './../zzz-other/css/tables.scss',        
+        './../utilities/css/fixtures.scss',
+        './../utilities/css/tables.scss',
         './fixtures-latest.component.scss',
     ]
 })
 export class FixturesLatestComponent implements OnInit {
 
     private teams: TeamsModel;
-    public fixturesForSeason: AllFixturesModel;
+    public allSeasonsFixtures: AllFixturesModel;
+    public nextSetOfFixtures: SetOfFixturesModel;
+    public latestFixtures: SetOfLatestFixturesModel;
     public tableBeforeFixtures: TablesModel;
     public tableInPlay: TablesModel;
-    public latestFixtures: SetOfFixturesModel;
+
+    public fixturesInPlay: boolean;
+    public areFixturesInPlayForRouter: boolean;
+    public startFixturesButtonEnabled: boolean;
+    public startFixturesButtonText: string;
     private dateOfLastSetOfFixtures: string;
+    private dateOfThisSetOfFixtures: string;
     public formattedDateOfFixtures: string;
-    public displayHeader: string;    
-
-    public setOfFixturesController: SetOfFixturesControllerModel;
-
-    private progressMatches;
-
+    public haveAllFixturesInThisSetFinished: boolean;
+    public displayHeader: string;
+    public top3TeamsBeforeFixtures?: string[];
+    public maxMinutesForPeriod: number;
     private tableTypeInPlay: boolean;                         // Required by the HTML - also used by fixtures-latest.component (i.e. in the html call)
     public hasSeasonFinished: boolean;
 
+    private updateIntervalObservable: Subscription;
 
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: DataService,
+                private auth: AuthService) { }
 
     ngOnInit() {
-        let goalFactorsSource: string;
+        let i: number;
 
-        this.teams = this.dataService.appData.teamsForSeason;
-        this.fixturesForSeason = this.dataService.appData.allFixtures;
-        this.tableBeforeFixtures = this.dataService.appData.latestTable;
-        this.dateOfLastSetOfFixtures = this.dataService.appData.miscInfo.dateOfLastSetOfFixtures;
+        debugger;
 
-        this.hasSeasonFinished = this.dataService.appData.miscInfo.hasSeasonFinished;
+        if (this.dataService.appData.miscInfo.haveSeasonsFixturesBeenCreated) {
 
-        if (this.fixturesForSeason.length === undefined) {
-            this.displayHeader = "New game ... please create fixtures for the season via Administration";
-        } else if (this.hasSeasonFinished) {
-            this.displayHeader = "Season finished";
-        } else {
-            this.displayHeader = "Premiership Football";
-        }
+            this.teams = this.dataService.appData.teamsForSeason;
+            this.allSeasonsFixtures = this.dataService.appData.setsOfFixtures;
+            this.hasSeasonFinished = this.dataService.appData.miscInfo.hasSeasonFinished;
+            this.dateOfLastSetOfFixtures = this.dataService.appData.miscInfo.dateOfLastSetOfFixtures;
+            this.maxMinutesForPeriod = 0;
+            this.fixturesInPlay = false;
+            this.areFixturesInPlayForRouter = false;
+            this.startFixturesButtonText = START_FIXTURES;
+            this.startFixturesButtonEnabled = true;           //Enable the Start Fixtures button
 
+            this.nextSetOfFixtures = this.getNextSetOfFixtures();
 
-        if (this.dataService.haveSeasonsFixturesBeenCreated()) {
+            if (this.nextSetOfFixtures != undefined) {
+                this.dateOfThisSetOfFixtures = this.nextSetOfFixtures.dateOfSetOfFixtures;
+            }
 
-            this.setOfFixturesController = <SetOfFixturesControllerModel>{};
+            this.latestFixtures = this.getEmptySetOfFixtures();
 
-            this.setOfFixturesController.fixturesInPlay = false;
-            this.setOfFixturesController.isFirstHalf = true;
-            this.setOfFixturesController.startFixturesButtonText = "Start Fixtures";
-            this.setOfFixturesController.versusBetweenTeams = "v";
+            for (i = 0; i < this.nextSetOfFixtures.fixtures.length; i++) {
+                this.latestFixtures.fixtures.push(new Fixture(this.nextSetOfFixtures.fixtures[i], this.dataService.appData.miscInfo, this.dataService.appData.teamsForSeason));
+                this.latestFixtures.dateOfSetOfFixtures = this.nextSetOfFixtures.dateOfSetOfFixtures;
+                this.latestFixtures.fixtures[i].setUpFixture();
+            }
 
-            this.setOfFixturesController.maxInjuryTime1stHalf = 0;
-            this.setOfFixturesController.maxInjuryTime2ndHalf = 0;
-            this.setOfFixturesController.minutesInfo = "";
-
-            this.setOfFixturesController.matchUpdateInterval = this.dataService.appData.miscInfo.matchUpdateInterval;
-            this.setOfFixturesController.factorBaseForRandomMultiplier = this.dataService.appData.miscInfo.factorBaseForRandomMultiplier;
-            this.setOfFixturesController.factorAwayTeam = this.dataService.appData.miscInfo.factorAwayTeam;
-            this.setOfFixturesController.factorIsNotATopTeam = this.dataService.appData.miscInfo.factorIsNotATopTeam;
-            this.setOfFixturesController.factorIsItAGoal = this.dataService.appData.miscInfo.factorIsItAGoal;
+            if (this.allSeasonsFixtures.length === undefined) {
+                this.displayHeader = "New game ... please create fixtures for the season via Administration";
+            } else if (this.dataService.appData.miscInfo.hasSeasonFinished) {
+                this.displayHeader = "Season finished";
+            } else {
+                this.displayHeader = "Latest Fixtures";
+            }
 
             if (this.dataService.appData.latestTable[0].played > 0) {
-                this.setOfFixturesController.teamIn1stPlaceInTable = this.dataService.appData.latestTable[0].teamName;
-                this.setOfFixturesController.teamIn2ndPlaceInTable = this.dataService.appData.latestTable[1].teamName;
-                this.setOfFixturesController.teamIn3rdPlaceInTable = this.dataService.appData.latestTable[2].teamName;
+                this.top3TeamsBeforeFixtures = [ this.dataService.appData.latestTable[0].teamName, this.dataService.appData.latestTable[1].teamName, this.dataService.appData.latestTable[2].teamName ];
+            } else {
+                this.top3TeamsBeforeFixtures = ["", "", ""];
             }
 
-            // Convert likelihood of a goal during a certain period of a match from a string to an array
-            goalFactorsSource = this.dataService.appData.miscInfo.factorLikelihoodOfAGoalDuringASetPeriod;
-            goalFactorsSource = goalFactorsSource.replace(/'/g, '"');         //Need to do this otherwise reading the value from local storage errors
-            this.setOfFixturesController.factorLikelihoodOfAGoalDuringASetPeriod = JSON.parse("[" + goalFactorsSource + "]");
+            this.formattedDateOfFixtures = helpers.formatDate(this.latestFixtures.dateOfSetOfFixtures);
 
-            this.latestFixtures = this.getNextSetOfFixtures();
-
-            if (this.latestFixtures != undefined) {
-                this.setOfFixturesController.dateOfThisSetOfFixtures = this.latestFixtures.dateOfSetOfFixtures;
-                this.formattedDateOfFixtures = helpers.formatDate(this.latestFixtures.dateOfSetOfFixtures);                       
-                this.setScoresAndGoals("");
-                this.setupInPlayTable();
-            }
-
-            this.setOfFixturesController.startFixturesButtonEnabled = true;           //Enable the Start Fixtures button
-
+            this.tableBeforeFixtures = this.dataService.appData.latestTable;
+            this.setupInPlayTable();
         }
+    }
+
+    ngOnDestroy() {
+        if (this.dataService.appData.miscInfo.haveSeasonsFixturesBeenCreated) {
+            if (this.dataService.appData.setsOfFixtures[0].fixtures[0].hasFixtureFinished) this.dataService.appData.miscInfo.hasSeasonStarted = true;
+            if (this.getNextSetOfFixtures().fixtures.length === 0) this.dataService.appData.miscInfo.hasSeasonFinished = true;
+            this.dataService.saveAppData();
+
+            if (this.updateIntervalObservable) this.updateIntervalObservable.unsubscribe;      //Unsubscribe from the observable to stop memory leaks
+        }
+    }
+
+    authenticated() {
+        return this.auth.authenticated;
     }
 
     startSetOfFixtures(): void {
-        let i: number;
-        let injuryTimeHalf1: number;
-        let injuryTimeHalf2: number;
+        let speedOfUpdates: number;
 
-        this.setOfFixturesController.fixturesInPlay = true;
-        this.setOfFixturesController.versusBetweenTeams = "";
-        this.setOfFixturesController.statutoryMinutes = (this.setOfFixturesController.isFirstHalf) ? 45 : 90;
-        this.setOfFixturesController.minutesPlayed = (this.setOfFixturesController.isFirstHalf) ? 0 : 45;
+        this.fixturesInPlay = true;
+        this.areFixturesInPlayForRouter = true;
+        this.startFixturesButtonEnabled = false;            //Disable the Start Fixtures button
 
-        //Set the number of injury time minutes for each fixture
-        for (i = 0; i < this.latestFixtures.fixtures.length; i++) {
+        this.maxMinutesForPeriod = 0;                       // Set to zero as will be calculated for each fixture below
 
-            if (this.setOfFixturesController.isFirstHalf) this.setScoresAndGoals(0);
+        this.latestFixtures.fixtures.forEach(fixture => {
+            if (!fixture.hasFixtureFinished) {
+                fixture.startFixture();
+                this.updateInPlayTable(fixture);      // Set up in play table before fixtures start (so all teams in the current fixture are drawing)
 
-            injuryTimeHalf1 = Math.floor(Math.random() * EXTRA_MINUTES_FIRST_HALF + 1);
-            this.latestFixtures.fixtures[i].injuryTime1stHalf = injuryTimeHalf1;
-            this.setOfFixturesController.maxInjuryTime1stHalf = Math.max(injuryTimeHalf1, this.setOfFixturesController.maxInjuryTime1stHalf);     //Determine the match with the most injury time, to stop timer
+                this.getMaximumMinutes(fixture);      // Get the maximum number of minutes for this period of all fixtures in play
+            }
+        });
 
-            injuryTimeHalf2 = Math.floor(Math.random() * EXTRA_MINUTES_SECOND_HALF + 1);
-            this.latestFixtures.fixtures[i].injuryTime2ndHalf = injuryTimeHalf2;
-            this.setOfFixturesController.maxInjuryTime2ndHalf = Math.max(injuryTimeHalf2, this.setOfFixturesController.maxInjuryTime2ndHalf);     //Determine the match with the most injury time, to stop timer
+        speedOfUpdates = this.dataService.appData.miscInfo.goalFactors.fixtureUpdateInterval * 1000;
+        this.updateIntervalObservable = Observable.interval(speedOfUpdates).take(this.maxMinutesForPeriod).subscribe((counter: number) => this.checkFixturesProgress(counter + 1));
 
-            this.latestFixtures.fixtures[i].maxNumberOfMinutes = this.setOfFixturesController.statutoryMinutes + ((this.setOfFixturesController.isFirstHalf) ? injuryTimeHalf1 : injuryTimeHalf2);
-        }
-
-        this.setOfFixturesController.maxNumberOfMinutes = (this.setOfFixturesController.isFirstHalf) ? this.setOfFixturesController.statutoryMinutes + this.setOfFixturesController.maxInjuryTime1stHalf : this.setOfFixturesController.statutoryMinutes + this.setOfFixturesController.maxInjuryTime2ndHalf;
-
-        this.setOfFixturesController.startFixturesButtonEnabled = false;           //Disable the Start Fixtures button
-
-        // Name of the function and Update interval are both required
-        this.progressMatches = setInterval(this.updateScores, this.setOfFixturesController.matchUpdateInterval, this)
     }
 
-    private updateScores(self: this): void {
-        // Cannot use this as it is an asynchronous function.  Make sure self is set to type this so that intellisense works
-        let updateTable: boolean;
-        let minutesinMatchFactor: number = 0;
-        let fixtureCounter: number = 0;
-        let goalFactors: any[];
+    private checkFixturesProgress(counter: number) {
 
-        goalFactors = self.setOfFixturesController.factorLikelihoodOfAGoalDuringASetPeriod;
-
-        for (let i = 0; i < goalFactors[0].length; i++) {
-            if (self.setOfFixturesController.minutesPlayed <= goalFactors[0][i].minutes) {
-                minutesinMatchFactor = self.setOfFixturesController.factorBaseForRandomMultiplier * goalFactors[0][i].factor;
-                break;
-            }
-        }
-
-        updateTable = false;
-
-        self.setOfFixturesController.minutesPlayed++;
-
-        for (fixtureCounter = 0; fixtureCounter < self.latestFixtures.fixtures.length; fixtureCounter++) {
-
-            if (self.setOfFixturesController.minutesPlayed <= self.latestFixtures.fixtures[fixtureCounter].maxNumberOfMinutes) {
-                if (self.hasTeamScored("home", self, fixtureCounter, minutesinMatchFactor) && !updateTable) updateTable = true;
-                if (self.hasTeamScored("away", self, fixtureCounter, minutesinMatchFactor) && !updateTable) updateTable = true;
-            }
-        }
-
-        if (updateTable) self.updateInPlayTable();
-
-        //Check for end of fixtures
-        if (self.setOfFixturesController.minutesPlayed > self.setOfFixturesController.maxNumberOfMinutes) {
-            clearInterval(self.progressMatches);     //Clear the timer
-            self.setOfFixturesController.fixturesInPlay = false;
-            if (self.setOfFixturesController.isFirstHalf) {
-                self.setOfFixturesController.minutesInfo = "Half-Time";
-                self.setOfFixturesController.isFirstHalf = false;
-                self.setOfFixturesController.startFixturesButtonEnabled = true;           // Enable the Start Fixtures button
-                self.setOfFixturesController.startFixturesButtonText = "Start Second Half";
-            } else {
-                self.setOfFixturesController.minutesInfo = "Full-Time";
-                self.setOfFixturesController.startFixturesButtonEnabled = false;           // Disable the Start Fixtures button
+        this.latestFixtures.fixtures.forEach(fixture => {
+            if (fixture.updateFixture()) {
                 debugger;
-                self.dataService.appData.miscInfo.dateOfLastSetOfFixtures = self.setOfFixturesController.dateOfThisSetOfFixtures;
-                self.dataService.appData.latestTable = self.tableInPlay;                
-                self.dataService.appData.miscInfo.hasSeasonStarted = true;
-
-                for (fixtureCounter = 0; fixtureCounter < self.latestFixtures.fixtures.length; fixtureCounter++) {
-                    self.latestFixtures.fixtures[fixtureCounter].hasFixtureBeenPlayed = true;
-                }
-                    
-                if (self.getNextSetOfFixtures().dateOfSetOfFixtures === "") self.dataService.appData.miscInfo.hasSeasonFinished = true;     //This statement needs to be after dateOfLastSetOfFixtures is set just above
-                self.dataService.saveAppData();
+                this.updateInPlayTable(fixture);
             }
-        } else {
-            self.setOfFixturesController.minutesInfo = self.setOfFixturesController.minutesPlayed + ((self.setOfFixturesController.minutesPlayed === 1) ? " min" : " mins");
+        });
+
+        if (this.maxMinutesForPeriod === counter) {
+
+            this.haveAllFixturesInThisSetFinished = (this.latestFixtures.fixtures.filter(fixture => fixture.hasFixtureFinished).length === this.latestFixtures.fixtures.length);
+
+            if (this.haveAllFixturesInThisSetFinished) {
+
+                this.startFixturesButtonText = FIXTURES_FINISHED;
+                this.startFixturesButtonEnabled = false;       //Enable/Disable the Start Fixtures button
+
+                this.dataService.appData.miscInfo.dateOfLastSetOfFixtures = this.dateOfThisSetOfFixtures;
+
+                debugger;
+                this.areFixturesInPlayForRouter = false;
+                this.updateFixturesDataSourceWithResults();
+                this.updateTablesDataSourceWithResults();
+                this.dataService.saveAppData();
+            } else {
+                this.startFixturesButtonText = RESTART_FIXTURES;
+                this.startFixturesButtonEnabled = true;       //Enable/Disable the Start Fixtures button
+            }
         }
 
+    }
+
+    private updateFixturesDataSourceWithResults() {
+        //The latest fixtures are in their own array so now need to update the dataService fixture arrays.
+        this.updateDataFixtures("");
+    }
+
+    private updateDataFixtures(stage: string) {
+        let indexSetOfFixtures: number;
+        let indexHomeTeam: number;
+        let dataServiceFixture: FixtureModel;
+        let latestFixture: FixtureModel;
+
+        this.latestFixtures.fixtures.forEach(latestFixture => {
+
+            indexSetOfFixtures = helpers.getPositionInArrayOfObjects(this.dataService.appData.setsOfFixtures, "dateOfSetOfFixtures", this.latestFixtures.dateOfSetOfFixtures);
+            indexHomeTeam = helpers.getPositionInArrayOfObjects(this.dataService.appData.setsOfFixtures[indexSetOfFixtures].fixtures, "homeTeam", latestFixture.homeTeam);
+            dataServiceFixture = this.dataService.appData.setsOfFixtures[indexSetOfFixtures].fixtures[indexHomeTeam];
+
+            dataServiceFixture.homeTeamsScore = latestFixture.homeTeamsScore;
+            dataServiceFixture.awayTeamsScore = latestFixture.awayTeamsScore;
+            dataServiceFixture.homeTeamsGoals = latestFixture.homeTeamsGoals;
+            dataServiceFixture.awayTeamsGoals = latestFixture.awayTeamsGoals;
+            dataServiceFixture.injuryTimeFirstHalf = latestFixture.injuryTimeFirstHalf;
+            dataServiceFixture.injuryTimeSecondHalf = latestFixture.injuryTimeSecondHalf;
+            dataServiceFixture.minutesPlayed = latestFixture.minutesPlayed;
+            dataServiceFixture.hasFixtureFinished = latestFixture.hasFixtureFinished;
+        });
+    }
+
+    private updateTablesDataSourceWithResults() {
+        this.dataService.appData.latestTable = this.tableInPlay;
+    }
+
+    private getMaximumMinutes(fixture: Fixture): void {
+        this.maxMinutesForPeriod = Math.max(this.maxMinutesForPeriod, fixture.maxNumberOfMinutes - fixture.minutesPlayed + 1);    //Add 1 to fixture value
     }
 
     private getNextSetOfFixtures(): SetOfFixturesModel {
-        let i: number = 0;
+        let i: number;
         let setOfBlankFixtures: SetOfFixturesModel;
-    
+
         this.dateOfLastSetOfFixtures = this.dataService.appData.miscInfo.dateOfLastSetOfFixtures;
-        this.fixturesForSeason = this.dataService.appData.allFixtures;
-    
-        if (this.dateOfLastSetOfFixtures === "" && ! this.dataService.appData.miscInfo.hasSeasonStarted) {
-            return this.fixturesForSeason[0];
+        this.allSeasonsFixtures = this.dataService.appData.setsOfFixtures;
+
+        if (this.dateOfLastSetOfFixtures === "" && !this.dataService.appData.miscInfo.hasSeasonStarted) {
+            return this.allSeasonsFixtures[0];
         } else {
-            for (i = 0; i < this.fixturesForSeason.length; i++) {
-                if (this.fixturesForSeason[i].dateOfSetOfFixtures === this.dateOfLastSetOfFixtures && i !== this.fixturesForSeason.length - 1) {
-                    return this.fixturesForSeason[i + 1];
+            i = 0;
+            for (let setOfFixtures of this.allSeasonsFixtures) {
+                if (setOfFixtures.dateOfSetOfFixtures === this.dateOfLastSetOfFixtures && i !== this.allSeasonsFixtures.length - 1) {
+                    return this.allSeasonsFixtures[i + 1];
                 }
-            }
+                i++;
+            };
         }
-    
+
         return helpers.getEmptySetOfFixtures();
     }
-    
-    private hasTeamScored(whichTeam: string, self: this, fixtureCounter: number, minutesinMatchFactor: number): boolean {
-        let thisTeam: string;
-        let awayTeamFactor: number;
-        let isNotATopTeamFactor: number;
-        let isItAGoalFactor: number;
 
-        awayTeamFactor = (whichTeam === "home") ? 1 : self.setOfFixturesController.factorAwayTeam;
-
-        thisTeam = self.latestFixtures.fixtures[fixtureCounter][whichTeam + "Team"];
-
-        isNotATopTeamFactor = (self.teams[helpers.getPositionInArrayOfObjects(self.teams, "teamName", thisTeam)].isATopTeam) ? 1 : self.setOfFixturesController.factorIsNotATopTeam;
-
-        isItAGoalFactor = self.setOfFixturesController.factorIsItAGoal;
-
-        // Has a goal been scored
-        if (Math.floor(Math.random() * minutesinMatchFactor * awayTeamFactor * isNotATopTeamFactor) < isItAGoalFactor) {
-            self.latestFixtures.fixtures[fixtureCounter][whichTeam + "TeamsScore"] += 1;
-
-            if (self.setOfFixturesController.minutesPlayed > self.setOfFixturesController.statutoryMinutes) {
-                self.latestFixtures.fixtures[fixtureCounter][whichTeam + "TeamsGoals"] += self.setOfFixturesController.statutoryMinutes.toString() + "(+" + (self.setOfFixturesController.minutesPlayed - self.setOfFixturesController.statutoryMinutes).toString() + ")  ";
-            } else {
-                self.latestFixtures.fixtures[fixtureCounter][whichTeam + "TeamsGoals"] += self.setOfFixturesController.minutesPlayed + "  ";
-            }
-            return true;        // return true to update table and re-display
-        }
-        return false;
+    private getEmptySetOfFixtures(): SetOfLatestFixturesModel {
+        return { dateOfSetOfFixtures: "", fixtures: [] };
     }
 
     private setScoresAndGoals(scoresValue: any): void {
-        let i: number;
 
-        for (i = 0; i < this.latestFixtures.fixtures.length; i++) {
-            this.latestFixtures.fixtures[i].homeTeamsScore = scoresValue;
-            this.latestFixtures.fixtures[i].awayTeamsScore = scoresValue;
-            this.latestFixtures.fixtures[i].homeTeamsGoals = "";
-            this.latestFixtures.fixtures[i].awayTeamsGoals = "";
-        }
+        this.latestFixtures.fixtures.forEach(fixture => {
+            fixture.homeTeamsScore = scoresValue;
+            fixture.awayTeamsScore = scoresValue;
+            fixture.homeTeamsGoals = "";
+            fixture.awayTeamsGoals = "";
+        });
     }
 
-    private updateInPlayTable(): void {
-        let fixtureCounter: number;
+    private updateInPlayTable(fixture: FixtureModel): void {
         let homeOrAwayCounter: number;
         let thisTeam: string;
         let homeTeam: string;
         let awayTeam: string;
         let homeTeamScore: number;
         let awayTeamScore: number;
-        let indexBeforeFixtures: number;
+        let indexBeforeFixture: number;
         let indexInPlay: number;
-        let fixture;
-        let team: TableModel;
+        let teamBeforeFixture: TableModel;
         let teamInPlay: TableModel;
 
-        for (fixtureCounter = 0; fixtureCounter < this.latestFixtures.fixtures.length; fixtureCounter++) {
+        // this.latestFixtures.fixtures.forEach(fixture => {
 
-            fixture = this.latestFixtures.fixtures[fixtureCounter];
-            homeTeam = fixture.homeTeam;
-            awayTeam = fixture.awayTeam;
-            homeTeamScore = fixture.homeTeamsScore;
-            awayTeamScore = fixture.awayTeamsScore;
+        homeTeam = fixture.homeTeam;
+        awayTeam = fixture.awayTeam;
+        homeTeamScore = fixture.homeTeamsScore;
+        awayTeamScore = fixture.awayTeamsScore;
 
-            for (homeOrAwayCounter = 0; homeOrAwayCounter <= 1; homeOrAwayCounter++) {
+        for (homeOrAwayCounter = 0; homeOrAwayCounter <= 1; homeOrAwayCounter++) {
 
-                thisTeam = (homeOrAwayCounter === HOME_TEAM) ? homeTeam : awayTeam;
+            thisTeam = (homeOrAwayCounter === HOME_TEAM) ? homeTeam : awayTeam;
 
-                indexBeforeFixtures = helpers.getPositionInArrayOfObjects(this.dataService.appData.latestTable, "teamName", thisTeam);
-                indexInPlay = helpers.getPositionInArrayOfObjects(this.tableInPlay, "teamName", thisTeam);
+            indexBeforeFixture = helpers.getPositionInArrayOfObjects(this.dataService.appData.latestTable, "teamName", thisTeam);
+            teamBeforeFixture = this.dataService.appData.latestTable[indexBeforeFixture];
 
-                team = this.dataService.appData.latestTable[indexBeforeFixtures];
-                teamInPlay = this.tableInPlay[indexInPlay];
+            indexInPlay = helpers.getPositionInArrayOfObjects(this.tableInPlay, "teamName", thisTeam);
+            teamInPlay = this.tableInPlay[indexInPlay];
 
-                teamInPlay.played = team.played + 1;
+            teamInPlay.played = teamBeforeFixture.played + 1;
 
-                teamInPlay.won = team.won;
-                teamInPlay.drawn = team.drawn;
-                teamInPlay.lost = team.lost;
+            teamInPlay.won = teamBeforeFixture.won;
+            teamInPlay.drawn = teamBeforeFixture.drawn;
+            teamInPlay.lost = teamBeforeFixture.lost;
 
-                teamInPlay.points = team.points;
+            teamInPlay.points = teamBeforeFixture.points;
 
-                if (homeOrAwayCounter === HOME_TEAM) {
+            if (homeOrAwayCounter === HOME_TEAM) {
 
-                    teamInPlay.homeWon = team.homeWon;
-                    teamInPlay.homeDrawn = team.homeDrawn;
-                    teamInPlay.homeLost = team.homeLost;
+                teamInPlay.homeWon = teamBeforeFixture.homeWon;
+                teamInPlay.homeDrawn = teamBeforeFixture.homeDrawn;
+                teamInPlay.homeLost = teamBeforeFixture.homeLost;
 
-                    if (homeTeamScore > awayTeamScore) {
-                        teamInPlay.homeWon++;
-                        teamInPlay.won++;
-                        teamInPlay.points += 3;
-                        teamInPlay.form[teamInPlay.form.length - 1] = "W";
-                    }
-
-                    if (homeTeamScore === awayTeamScore) {
-                        teamInPlay.homeDrawn++;
-                        teamInPlay.drawn++;
-                        teamInPlay.points += 1;
-                        teamInPlay.form[teamInPlay.form.length - 1] = "D";
-                    }
-
-                    if (homeTeamScore < awayTeamScore) {
-                        teamInPlay.homeLost++;
-                        teamInPlay.lost++;
-                        teamInPlay.form[teamInPlay.form.length - 1] = "L";
-                    }
-
-                    teamInPlay.goalsFor = team.goalsFor + homeTeamScore;
-                    teamInPlay.goalsAgainst = team.goalsAgainst + awayTeamScore;
-                    teamInPlay.homeGoalsFor = team.homeGoalsFor + homeTeamScore;
-                    teamInPlay.homeGoalsAgainst = team.homeGoalsAgainst + awayTeamScore;
-                    teamInPlay.goalDifference = team.goalDifference + homeTeamScore - awayTeamScore;
-
-                } else {
-
-                    teamInPlay.awayWon = team.awayWon;
-                    teamInPlay.awayDrawn = team.awayDrawn;
-                    teamInPlay.awayLost = team.awayLost;
-
-                    if (awayTeamScore > homeTeamScore) {
-                        teamInPlay.awayWon++;
-                        teamInPlay.won++;
-                        teamInPlay.points += 3;
-                        teamInPlay.form[teamInPlay.form.length - 1] = "W";
-                    }
-
-                    if (awayTeamScore === homeTeamScore) {
-                        teamInPlay.awayDrawn++;
-                        teamInPlay.drawn++;
-                        teamInPlay.points += 1;
-                        teamInPlay.form[teamInPlay.form.length - 1] = "D";
-                    }
-
-                    if (awayTeamScore < homeTeamScore) {
-                        teamInPlay.awayLost++;
-                        teamInPlay.lost++;
-                        teamInPlay.form[teamInPlay.form.length - 1] = "L";
-                    }
-
-                    teamInPlay.goalsFor = team.goalsFor + awayTeamScore;
-                    teamInPlay.goalsAgainst = team.goalsAgainst + homeTeamScore;
-                    teamInPlay.awayGoalsFor = team.awayGoalsFor + awayTeamScore;
-                    teamInPlay.awayGoalsAgainst = team.awayGoalsAgainst + homeTeamScore;
-                    teamInPlay.goalDifference = team.goalDifference + awayTeamScore - homeTeamScore;
+                if (homeTeamScore > awayTeamScore) {
+                    teamInPlay.homeWon++;
+                    teamInPlay.won++;
+                    teamInPlay.points += 3;
+                    teamInPlay.form[teamInPlay.form.length - 1] = "W";
                 }
 
-                // Just take the last (i.e. latest) 10 games for the Form column
-                if (teamInPlay.form.length > SHOW_FORM_MATCHES) {
-                    teamInPlay.form = teamInPlay.form.slice(teamInPlay.form.length - SHOW_FORM_MATCHES);
+                if (homeTeamScore === awayTeamScore) {
+                    teamInPlay.homeDrawn++;
+                    teamInPlay.drawn++;
+                    teamInPlay.points += 1;
+                    teamInPlay.form[teamInPlay.form.length - 1] = "D";
                 }
+
+                if (homeTeamScore < awayTeamScore) {
+                    teamInPlay.homeLost++;
+                    teamInPlay.lost++;
+                    teamInPlay.form[teamInPlay.form.length - 1] = "L";
+                }
+
+                teamInPlay.goalsFor = teamBeforeFixture.goalsFor + homeTeamScore;
+                teamInPlay.goalsAgainst = teamBeforeFixture.goalsAgainst + awayTeamScore;
+                teamInPlay.homeGoalsFor = teamBeforeFixture.homeGoalsFor + homeTeamScore;
+                teamInPlay.homeGoalsAgainst = teamBeforeFixture.homeGoalsAgainst + awayTeamScore;
+                teamInPlay.goalDifference = teamBeforeFixture.goalDifference + homeTeamScore - awayTeamScore;
+
+            } else {
+
+                teamInPlay.awayWon = teamBeforeFixture.awayWon;
+                teamInPlay.awayDrawn = teamBeforeFixture.awayDrawn;
+                teamInPlay.awayLost = teamBeforeFixture.awayLost;
+
+                if (awayTeamScore > homeTeamScore) {
+                    teamInPlay.awayWon++;
+                    teamInPlay.won++;
+                    teamInPlay.points += 3;
+                    teamInPlay.form[teamInPlay.form.length - 1] = "W";
+                }
+
+                if (awayTeamScore === homeTeamScore) {
+                    teamInPlay.awayDrawn++;
+                    teamInPlay.drawn++;
+                    teamInPlay.points += 1;
+                    teamInPlay.form[teamInPlay.form.length - 1] = "D";
+                }
+
+                if (awayTeamScore < homeTeamScore) {
+                    teamInPlay.awayLost++;
+                    teamInPlay.lost++;
+                    teamInPlay.form[teamInPlay.form.length - 1] = "L";
+                }
+
+                teamInPlay.goalsFor = teamBeforeFixture.goalsFor + awayTeamScore;
+                teamInPlay.goalsAgainst = teamBeforeFixture.goalsAgainst + homeTeamScore;
+                teamInPlay.awayGoalsFor = teamBeforeFixture.awayGoalsFor + awayTeamScore;
+                teamInPlay.awayGoalsAgainst = teamBeforeFixture.awayGoalsAgainst + homeTeamScore;
+                teamInPlay.goalDifference = teamBeforeFixture.goalDifference + awayTeamScore - homeTeamScore;
+            }
+
+            // Just take the last (i.e. latest) 10 games for the Form column
+            if (teamInPlay.form.length > SHOW_FORM_MATCHES) {
+                teamInPlay.form = teamInPlay.form.slice(teamInPlay.form.length - SHOW_FORM_MATCHES);
             }
         }
 
@@ -374,15 +364,14 @@ export class FixturesLatestComponent implements OnInit {
     }
 
     private setupInPlayTable(): void {
-        let i;
 
         //Deep clone the array
         this.tableInPlay = JSON.parse(JSON.stringify(this.dataService.appData.latestTable));
 
         //Add a new array element for Form
-        for (i = 0; i < this.tableInPlay.length; i++) {
-            this.tableInPlay[i].form.push("");
-        }
+        this.tableInPlay.forEach(team => {
+            team.form.push("");
+        });
 
     }
 
@@ -391,6 +380,11 @@ export class FixturesLatestComponent implements OnInit {
         //Call the function in the helpers file.  Needs to be done like this so that the function can be referenced in the html file with ngClass
         return helpers.getPositionInArrayOfObjects(array, objectProperty, obJectValue);
     }
+
+    public canDeactivate() {
+        return !this.areFixturesInPlayForRouter;
+    }
+
 
 
 }

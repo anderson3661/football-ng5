@@ -1,162 +1,114 @@
-<div class="inner-container" *ngIf="appDataMiscInfo != undefined">
+<div class="container-main-content" *ngIf="appDataMiscInfo != undefined">
 
-    <div id="main-grid">
-
+    <header>
         <h1>Administration</h1>
 
-        <form id="admin-form" #adminForm="ngForm">
-            <!-- <form id="admin-form"> -->
+        <div class="dataStorage">
+            <span>Where is data saved?</span>
+            <mat-radio-group [(ngModel)]="appDataMiscInfo.dataStorage" name="dataStorage">
+                <mat-radio-button value="Browser">Browser</mat-radio-button>
+                <mat-radio-button value="Firebase" [disabled]="!authenticated()">Firebase</mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </header>
 
+    <form #adminForm="ngForm">
 
-            <div id="div-admin">
+        <div class="container-admin">
 
-                <div id="div-admin-teams">
+            <div class="container-admin-teams">
 
-                    <div class="card bg-light border-secondary mb-3">
-                        <h4 class="card-header text-center">Teams for the Season</h4>
-                        <div class="card-body" id="div-admin-teams-card-body">
-                            <table id="admin-teams">
-                                <tr id="teams-header">
-                                    <td id="admin-teams-number">No.</td>
-                                    <td id="admin-teams-team">Team</td>
-                                    <td id="admin-teams-top-team">Top Team?</td>
-                                </tr>
+                <div class="container-card">
 
-                                <tr *ngFor="let nTeam of appDataTeams; let i = index" class="teams-row">
-                                    <td>{{ i + 1 }}</td>
+                    <h2>Teams for the Season</h2>
+
+                    <table class="admin-teams">
+                        <thead>
+                            <tr class="teams-header">
+                                <th class="admin-team-number">No.</th>
+                                <th class="admin-team-team">Team</th>
+                                <th class="admin-team-top-team">Top Team?</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <ng-container *ngFor="let team of appDataTeams; let i = index">
+                                <tr class="team-row">
+                                    <td class="admin-team-number">{{ i + 1 }}</td>
                                     <td id="team{{ i }}">
-                                        <input type="text" class="form-control form-control-sm" id="team{{ i }}" [(ngModel)]="nTeam.teamName" name="team{{ i }}">
+                                        <input type="text" id="team{{ i }}" [(ngModel)]="team.teamName" name="team{{ i }}">
                                     </td>
                                     <td id="topteam{{ i }}">
-                                        <input type="checkbox" class="form-control form-control-sm" id="topteam{{ i }}" ng-checked="nTeam.isATopTeam" [(ngModel)]="nTeam.isATopTeam"
-                                            name="topteam{{ i }}">
+                                        <input type="checkbox" id="topteam{{ i }}" ng-checked="team.isATopTeam" [(ngModel)]="team.isATopTeam" name="topteam{{ i }}">
                                     </td>
                                 </tr>
-                            </table>
-                        </div>
-                    </div>
-
+                            </ng-container>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div id="div-admin-factors">
-
-                    <!-- <mat-card class="example-card">            
-                      <mat-card-header>
-                        <div mat-card-avatar class="example-header-image"></div>
-                        <mat-card-title>Shiba Inu</mat-card-title>
-                        <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-                      </mat-card-header>             -->
-                    <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">-->
-                    <!-- <mat-card-content>
-                        <p>
-                          The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-                          A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-                          bred for hunting.
-                        </p>
-                      </mat-card-content>
-                      <mat-card-actions>
-                        <button mat-button>LIKE</button>
-                        <button mat-button>SHARE</button>
-                      </mat-card-actions>
-                    </mat-card> -->
-
-                    <div class="card bg-light border-secondary mb-3">
-                        <h4 class="card-header text-center">Information for the Season</h4>
-                        <div class="card-body" id="card-body-information-for-the-season">
-
-                            <div class="form-group row">
-                                <label for="seasonYears" class="col-sm-6 col-form-label">Season</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="seasonYears" [(ngModel)]="appDataMiscInfo.season" name="seasonYears">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="seasonStartDate" class="col-sm-6 col-form-label">Season Start Date</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="seasonStartDate" [(ngModel)]="appDataMiscInfo.seasonStartDate" name="seasonStartDate">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="numberOfFixturesForSeason" class="col-sm-6 col-form-label">Number of Fixtures for Season</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="numberOfFixturesForSeason" [(ngModel)]="appDataMiscInfo.numberOfFixturesForSeason"
-                                        name="numberOfFixturesForSeason">
-                                </div>
-                            </div>
-
-                            <!-- <div class="form-group row">
-                                        <label for="dateOfLastSetOfFixtures" class="col-sm-6 col-form-label">Date of Last Set of Fixtures</label>
-                                        <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="dateOfLastSetOfFixtures">
-                                        </div>
-                                    </div> -->
-
-                        </div>
-                    </div>
-
-                    <div class="card bg-light border-secondary mb-1">
-                        <h4 class="card-header text-center">Match Score Factors</h4>
-                        <div class="card-body" id="card-body-match-score-factors">
-
-                            <div class="form-group row">
-                                <label for="factorBaseForRandomMultiplier" class="col-sm-6 col-form-label">Base For Random Multiplier</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="factorBaseForRandomMultiplier" [(ngModel)]="appDataMiscInfo.factorBaseForRandomMultiplier"
-                                        name="factorBaseForRandomMultiplier">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="factorAwayTeam" class="col-sm-6 col-form-label">Away Team Factor</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="factorAwayTeam" [(ngModel)]="appDataMiscInfo.factorAwayTeam" name="factorAwayTeam">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="factorIsNotATopTeam" class="col-sm-6 col-form-label">Is Not A Top Team Factor</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="factorIsNotATopTeam" [(ngModel)]="appDataMiscInfo.factorIsNotATopTeam" name="factorIsNotATopTeam">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="factorLikelihoodOfAGoalDuringASetPeriod" class="col-sm-6 col-form-label">Goals Per Minute Factor</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="factorLikelihoodOfAGoalDuringASetPeriod" [(ngModel)]="appDataMiscInfo.factorLikelihoodOfAGoalDuringASetPeriod"
-                                        name="factorLikelihoodOfAGoalDuringASetPeriod">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="factorIsItAGoal" class="col-sm-6 col-form-label">Is It A Goal Factor</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="factorIsItAGoal" [(ngModel)]="appDataMiscInfo.factorIsItAGoal" name="factorIsItAGoal">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="matchUpdateInterval" class="col-sm-6 col-form-label">Match Update Interval</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control" id="matchUpdateInterval" [(ngModel)]="appDataMiscInfo.matchUpdateInterval" name="matchUpdateInterval">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <br />
-                    <button id="adminSave" class="btn btn-primary" (click)="this.dataService.saveAppData(true)">Save Changes</button> &nbsp; &nbsp;
-                    <button id="fixturesForSeason" class="btn btn-info" (click)="this.createFixturesForSeason()">Create Fixtures for Season</button>
-                    <br />
-                    <br />
-
-                </div>
             </div>
-        </form>
 
-    </div>
+            <div class="container-admin-factors">
+
+                <div class="container-card">
+                    <h2>Information for the Season</h2>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Season" [(ngModel)]="appDataMiscInfo.season" name="seasonYears">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Season Start Date" [(ngModel)]="appDataMiscInfo.seasonStartDate" name="seasonStartDate">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Number of Fixtures for Season" [(ngModel)]="appDataMiscInfo.numberOfFixturesForSeason" name="numberOfFixturesForSeason">
+                    </mat-form-field>
+                </div>
+
+                <div class="container-card">
+                    <h2>Match Score Factors</h2>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Fixture Update Interval (seconds)" [(ngModel)]="appDataMiscInfo.goalFactors.fixtureUpdateInterval"
+                            name="fixtureUpdateInterval">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Base For Random Multiplier" [(ngModel)]="appDataMiscInfo.goalFactors.baseForRandomMultiplier"
+                            name="factorBaseForRandomMultiplier">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Away Team Factor" [(ngModel)]="appDataMiscInfo.goalFactors.isAwayTeam" name="factorAwayTeam">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Is Not A Top Team Factor" [(ngModel)]="appDataMiscInfo.goalFactors.isNotATopTeam" name="factorIsNotATopTeam">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-control-long">
+                        <input matInput placeholder="Goals Per Minute Factor" [(ngModel)]="appDataMiscInfo.goalFactors.likelihoodOfAGoalDuringASetPeriod"
+                            name="factorLikelihoodOfAGoalDuringASetPeriod">
+                    </mat-form-field>
+
+                    <mat-form-field class="form-control">
+                        <input matInput placeholder="Is It A Goal Factor" [(ngModel)]="appDataMiscInfo.goalFactors.isItAGoal" name="factorIsItAGoal">
+                    </mat-form-field>
+                </div>
+
+                <div class="buttons">
+                    <button [disabled]="!authenticated()" mat-button mat-raised-button color="primary" id="adminSave" class="btn btn-primary"
+                        (click)="this.dataService.saveAppData(true)">Save Changes</button> &nbsp; &nbsp;
+                    <button [disabled]="!authenticated()" mat-button mat-raised-button color="warn" id="fixturesForSeason" class="btn btn-info"
+                        (click)="this.createFixturesForSeason()">Create Tournament Fixtures</button> &nbsp; &nbsp;
+                    <button [disabled]="!authenticated()" mat-button mat-raised-button color="accent" id="resetApp" class="btn btn-small btn-danger"
+                        (click)="this.dataService.resetApp()">Reset App</button>
+                </div>
+
+            </div>
+        </div>
+    </form>
 
 </div>

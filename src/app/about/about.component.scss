@@ -1,0 +1,50 @@
+@import '~sass/variables';
+
+
+.container-main-content {
+    margin-top: 175px;
+    width: 100%;
+    max-width: 90%;
+}
+
+.container {
+    display: flex;
+    > div { width: 45%; }
+    margin: 25px 0;
+}
+
+.container-inner {
+    margin-bottom: 25px;
+}
+
+.container-card {
+    font-family: $font-family-main;
+    font-size: 0.9rem;
+    color: white;
+    text-align: left;
+    background: radial-gradient(ellipse at center, rgba(112,131,136,1) 0%, rgba(74,86,97,1) 100%);
+    // box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    margin: 0 auto 50px auto;
+    padding: 10px 20px;
+
+    h2 { text-align: center; }
+}
+
+.container-card.header {
+    width: 25%;
+    text-align: center;
+}
+
+li {
+    font-size: 16px;
+    padding: 10px;
+}
+
+li a {
+    color: yellow;
+}
+
+li a:hover {
+    text-decoration: underline;
+}

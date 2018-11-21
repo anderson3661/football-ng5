@@ -1,27 +1,38 @@
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { RouterModule } from '@angular/router';
-import { NgModule, Component } from '@angular/core';
 
-import { DataService } from './zzz-other/services/data.service';
+import { AppMaterialModule } from './app.material.module';
+
+import { DataService } from './utilities/services/data.service';
+import { UserService } from './utilities/services/user.service';
 import { AdministrationComponent } from './administration/administration.component';
 import { FixturesComponent } from './fixtures/fixtures.component';
 import { FixturesLatestComponent } from './fixtures-latest/fixtures-latest.component';
+import { FixtureRowComponent } from './fixture-row/fixture-row.component';
 import { TablesComponent } from './tables/tables.component';
 import { TeamStatsComponent } from './team-stats/team-stats.component';
+import { ContactComponent } from './contact/contact.component';
+import { HelpComponent } from './help/help.component';
+import { AboutComponent } from './about/about.component';
+import { LoginComponent } from './login/login.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
-import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material';
+// import { CoreModule } from './utilities/modules/core.module';
+import { AppRoutingModule } from './app.routing.module';
 
 import { AppComponent } from './app.component';
-// import { ChartsModule } from 'ng2-charts';
-// import { ChartComponent } from './chart/chart.component';
+import { AuthService } from './utilities/services/auth.service';
 
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { AngularFireAuthModule } from 'angularfire2/auth';
+import { environment } from '../environments/environment';
+
+// import { ChartsModule } from 'ng2-charts';
+import { ChartComponent } from './chart/chart.component';
 
 @NgModule({
   declarations: [
@@ -29,38 +40,35 @@ import { AppComponent } from './app.component';
     AdministrationComponent,
     FixturesComponent,
     FixturesLatestComponent,
+    FixtureRowComponent,
     TablesComponent,
     TeamStatsComponent,
+    HelpComponent,
+    ContactComponent,
+    AboutComponent,
+    LoginComponent,
     PageNotFoundComponent,
     DialogComponent,
-    // ChartComponent
+    ChartComponent
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
-    MatCardModule,
-    MatDialogModule,
-    MatButtonModule,
+    AppMaterialModule,
     // ChartsModule,
-    RouterModule.forRoot([
-      { path: '', component: AdministrationComponent },
-      { path: 'administration', component: AdministrationComponent },
-      { path: 'fixtures', component: FixturesComponent },
-      { path: 'fixtures/:displayResults', component: FixturesComponent },
-      { path: 'fixtures-latest', component: FixturesLatestComponent },
-      { path: 'tables', component: TablesComponent },
-      { path: 'teamstats', component: TeamStatsComponent },
-      { path: 'teamstats/:teamName', component: TeamStatsComponent },
-      { path: 'tables/:displayFullTable', component: TablesComponent },
-      { path: '**', component: PageNotFoundComponent }
-    ])    
+    // CoreModule,
+    AppRoutingModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
+    AngularFireAuthModule,
+
   ],
   entryComponents: [
     DialogComponent
   ],
-  providers: [ DataService ],
+  providers: [ DataService, UserService, AuthService ],
   bootstrap: [ AppComponent ]
 })
 

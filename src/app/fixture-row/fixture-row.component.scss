@@ -1,0 +1,138 @@
+@import '~sass/variables';
+@import '~sass/mixins';
+
+.fixtures-row {
+
+    display: flex;
+    font-weight: bold;
+
+    border-bottom: 1px solid $color-fixture-row-goal-times-bottom-border;
+
+    %teamName {
+        flex-basis: $width-fixture-row-team-name;
+        padding-top: 12px;
+        padding-bottom: 8px;
+    }
+    .homeTeamsName { @extend %teamName; text-align: right; padding-right: 8px; }
+    .awayTeamsName { @extend %teamName; text-align: left;  padding-left: 8px; }
+
+    %teamScore { flex-basis: $width-fixture-row-team-score; }
+    .homeTeamsScore { @extend %teamScore; padding-right: 0; }
+    .awayTeamsScore { @extend %teamScore; padding-left: 0; }
+    
+    .timeOrScore {
+        display: flex;
+        flex-basis: $width-fixture-time-or-score;
+        text-align: center;
+        justify-content: center;
+        padding-top: 8px;
+        padding-bottom: 8px;
+
+        .timeOfFixture {
+            padding: 4px 5px;
+            background-color: $background-color-time-of-fixture;
+        }
+
+        &.scoresOnly {
+            justify-content: space-evenly;
+        }    
+    }
+       
+    .finalScore { @include score($color-final-score, $background-color-final-score); }    
+}
+
+
+.fixtures-row.show-goals-hide-border-bottom {
+    border-bottom: none;        // Hioe the main bottom border if show goals is selected and the fixture has finished
+}
+
+
+.fixtures-row.in-play {
+
+    border-bottom: none;
+
+    .homeTeamsName, .awayTeamsName { padding-top: 5px; padding-bottom: 5px;}
+    .homeTeamsScore, .awayTeamsScore { padding-top: 4px; }
+    .timeOrScore.timeOnly { padding-top: 12px; }
+    
+    .activeScore { @include score($color-active-score, $background-color-active-score); }
+    .halfTimeScore { @include score($color-half-time-score, $background-color-half-time-score); }    
+
+}
+
+
+.fixtures-row.team-stats {
+
+    .fixtureDate { flex-basis: $width-fixture-row-team-stats-fixture-date; padding-top: 12px; font-weight: normal;}
+    .homeTeamsName, .awayTeamsName { flex-basis: $width-fixture-row-team-stats-team-name; }
+
+    .winDrawLoss {
+        flex-basis: $width-fixture-row-team-stats-win-draw-loss;
+        font-family: $font-family-league-table-form-cell;
+        // font-size: $font-size-league-table-form-cell;
+        color: $color-league-table-form-cell;
+        padding-top: 12px;
+        text-align: center;
+    }
+
+    .result { padding: 5px;}
+    .result.W { background-color: $color-league-table-form-cell-win; }
+    .result.D { background-color: $color-league-table-form-cell-draw; }
+    .result.L { background-color:$color-league-table-form-cell-loss; }
+    
+}
+
+
+.fixtures-row-goal-times {
+    
+    display: flex;
+    
+    font-size: $font-size-fixture-row-goal-times;
+    color: $color-fixture-row-goal-times;
+    border-bottom: 1px solid $color-fixture-row-goal-times-bottom-border;
+    
+    .teamsGoalTimes {
+        flex-basis: $width-fixture-row-goal-times;
+        white-space: pre;    /* This allows 2 spaces between goals */
+        padding-top: 0;
+        padding-bottom: 5px;
+    }
+    
+    .teamsGoalTimes.home { text-align: right; padding-right: 5px; }
+    .teamsGoalTimes.away { text-align: left; padding-left: 5px; }
+
+    .minutesPlayed {
+        flex-basis: $width-fixture-row-goal-times-minutes-played;
+        text-align: center;
+        padding: 0 10px;
+    }
+}
+
+.fixtures-row-goal-times.team-stats {
+    .fixtureDate { flex-basis: $width-fixture-row-team-stats-fixture-date };
+    .teamsGoalTimes { flex-basis: $width-fixture-row-team-stats-team-name };
+    .winDrawLoss { flex-basis: $width-fixture-row-team-stats-win-draw-loss };    
+}
+
+
+.icon-position {
+    // font-size: 18px;
+    color: #a67c00;
+    padding-left: 5px; padding-right: 10px;
+}
+
+// .iconTop3 { font-family: FontAwesome; top: 0; left: 0; }
+.iconTop3 { top: 0; left: 0; }
+.iconTop3BeforeText, .iconTop3AfterText { position: relative; }
+.iconTop3BeforeText:before, .iconTop3AfterText:after { color: #a67c00; padding-left: 5px; padding-right: 10px; }
+// .iconTop3Home1st:before, .iconTop3Away1st:after { content: "\f005"; }
+.iconTop3Home2nd:before, .iconTop3Away2nd:after { content: "looks_two"; }
+// .iconTop3Home3rd:before, .iconTop3Away3rd:after { content: "\f006"; }
+
+
+// .faIconTop3 { font-family: FontAwesome; top: 0; left: 0; }
+// .faIconTop3BeforeText, .faIconTop3AfterText { position: relative; }
+// .faIconTop3BeforeText:before, .faIconTop3AfterText:after { color: #a67c00; padding-left: 5px; padding-right: 10px; }
+// .faIconTop3Home1st:before, .faIconTop3Away1st:after { content: "\f005"; }
+// .faIconTop3Home2nd:before, .faIconTop3Away2nd:after { content: "\f123"; }
+// .faIconTop3Home3rd:before, .faIconTop3Away3rd:after { content: "\f006"; }

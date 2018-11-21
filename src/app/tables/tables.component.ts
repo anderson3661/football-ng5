@@ -1,6 +1,6 @@
-import { DataService } from './../zzz-other/services/data.service';
-import { TablesModel } from './../zzz-other/interfaces/interfaces';
-import * as helpers from '../zzz-other/helper-functions/helpers';
+import { DataService } from './../utilities/services/data.service';
+import { TablesModel } from './../utilities/interfaces/interfaces';
+import * as helpers from '../utilities/helper-functions/helpers';
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
@@ -8,9 +8,8 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
     selector: 'app-tables',
     templateUrl: './tables.component.html',
     styleUrls: [
-        '../../../node_modules/font-awesome/css/font-awesome.min.css',
-        './../zzz-other/css/fixtures.scss',
-        './../zzz-other/css/tables.scss',
+        './../utilities/css/fixtures.scss',
+        './../utilities/css/tables.scss',
         './tables.component.scss'
     ]
 })
@@ -32,6 +31,7 @@ export class TablesComponent implements OnInit {
     ngOnInit() {
         let urlParam: string;
 
+        debugger;
         this.table = (this.tableInPlay === null || this.tableInPlay === undefined) ? this.dataService.appData.latestTable : this.tableInPlay;
         this.tableBeforeFixtures = (this.tableBeforeFixtures === null || this.tableBeforeFixtures === undefined) ? [] : this.tableBeforeFixtures;
 

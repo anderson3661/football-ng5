@@ -1,0 +1,81 @@
+@import '~sass/variables';
+
+
+.container-main-content {
+    margin-top: 200px;
+    width: 75%;
+    padding: 1vh 2vw;
+}
+
+.container-card {
+    font-family: $font-family-main;
+    font-size: 0.9rem;
+    color: black;
+    text-align: left;
+    background: radial-gradient(ellipse at center, rgba(112,131,136,0.05) 0%, rgba(74,86,97,0.2) 100%);
+    // box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    // box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    margin: 0 auto;
+    padding: 10px 20px 125px 20px;
+
+    h2 { text-align: center; }
+}
+
+header h1, p {
+    text-align: center;
+    // margin: 50px 0;
+}
+
+.contact {
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+}
+
+.main-form {
+    width: 60%;
+    max-height: 40vh;
+}
+
+.contact-form {
+    width: 100%;
+    margin: 2vh auto;
+}
+  
+.contact-form-full-width {
+    width: 100%;
+    padding: 2vh 0;
+}
+
+mat-form-field {
+    padding: 0;
+    margin: 0;
+}
+
+.submit-button {
+    text-align: center;
+    margin: 1vh 0;
+}
+
+.invalid-form-message {
+    color: red;
+    font-size: 14px;
+}
+
+@media screen and (max-width: 1280px) and (min-width: 700px) {
+
+    mat-form-field {
+        font-size: 0.8em;
+        line-height: 0.8em;
+    }
+
+    .header h1, p {
+        margin: 1vh 0 0 0;
+    }
+
+    .submit-button {
+        margin: 0;
+    }
+
+}

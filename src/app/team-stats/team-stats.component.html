@@ -1,22 +1,20 @@
-<div id="main-grid">
+<div class="container-main-content">
 
-    <h1>Results/Fixtures for {{ teamName }}</h1>
+    <div class="main-header">
+        <h1>Results/Fixtures for {{ teamName }}</h1>
+        <div class="showGoals">
+            <mat-checkbox [(ngModel)]="showGoals">Show Goals</mat-checkbox>
+        </div>
+    </div>
 
-    <table class="fixtures">
-        <tr class="fixtures-row team-stats" *ngFor="let fixture of fixturesToOutput; let i = index">
-            <td class="fixtureDate">{{ fixture.dateOfFixture }}</td>
-            <td id="homeTeamsName{{ i }}">{{ fixture.homeTeam }}</td>
-            <td id="homeTeamsScore{{ i }}">
-                <span [ngClass]="{ finalScore: fixture.hasFixtureBeenPlayed }">{{ fixture.homeTeamsScore }}</span>
-            </td>
-            <td class="versus">{{ fixture.hasFixtureBeenPlayed ? '' : 'v' }}</td>
-            <td id="awayTeamsScore{{ i }}">
-                <span [ngClass]="{ finalScore: fixture.hasFixtureBeenPlayed }">{{ fixture.awayTeamsScore }}</span>
-            </td>
-            <td id="awayTeamsName{{ i }}">{{ fixture.awayTeam }}</td>
-        </tr>
-    </table>
-   
+    <div class="fixtures">
+        <ng-container *ngFor="let fixture of fixturesToOutput; let i = index">
+
+            <fixture-row [source]="'Team Stats'" [fixture]="fixture" [showGoals]="showGoals" [winDrawLoss]="fixture.winDrawLoss"></fixture-row>
+
+        </ng-container>
+    </div>
+
     <!-- <div class="chart">
         <canvas
             baseChart
@@ -26,8 +24,8 @@
             [options]="chartOptions"
             [colors]="chartColors"
             [legend]="true"> -->
-            <!-- (chartClick)="onChartClick($event)"> -->
-        <!-- </canvas> -->
+    <!-- (chartClick)="onChartClick($event)"> -->
+    <!-- </canvas> -->
     <!-- </div> -->
 
     <canvas id="myChart"></canvas>
